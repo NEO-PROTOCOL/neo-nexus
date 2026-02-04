@@ -6,8 +6,11 @@ WORKDIR /app
 # Copy dependency files
 COPY package.json ./
 
-# Install dependencies (ignore scripts for better-sqlite3)
-RUN npm install --ignore-scripts
+# Install build dependencies for native modules
+RUN apk add --no-cache python3 make g++
+
+# Install dependencies (allow scripts for native builds)
+RUN npm install
 
 # Copy source code
 COPY . .

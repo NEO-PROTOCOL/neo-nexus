@@ -1,16 +1,16 @@
 
 graph TB
     %% ======================================================================================
-    %%                           NEØ PROTOCOL MASTER ARCHITECTURE
+    %%                           NEO PROTOCOL MASTER ARCHITECTURE
     %% ======================================================================================
     
-    subgraph NEOBOT["🧠 NEOBOT CORE (The Brain)"]
+    subgraph NEOBOT["NEOBOT CORE (The Brain)"]
         direction TB
-        GATEWAY["🚀 Gateway (WebSocket/HTTP)"]
-        NEXUS["⚡ PROTOCOL NEXUS (Event Bus)"]
-        MIO["🆔 MIO System (Identity Backend)"]
-        ADAPTER["🛡️ Sovereign Adapter"]
-        ANALYSIS["👁️ Sovereign Eye (Code Analysis)"]
+        GATEWAY["Gateway (WebSocket/HTTP)"]
+        NEXUS["PROTOCOL NEXUS (Event Bus)"]
+        MIO["MIO System (Identity Backend)"]
+        ADAPTER["Sovereign Adapter"]
+        ANALYSIS["Sovereign Eye (Code Analysis)"]
         
         %% Core Wiring
         GATEWAY --> NEXUS
@@ -19,12 +19,12 @@ graph TB
         ADAPTER --> ANALYSIS
     end
 
-    subgraph OPERATIONS["💼 FLOWOFF OPERATIONS (The Arms)"]
+    subgraph OPERATIONS["FLOWOFF OPERATIONS (The Arms)"]
         direction TB
-        FLOWCLOSER["💬 FlowCloser (CRM/Sales Agent)"]
-        AGENT_FO["🤖 Agent FlowOFF (Traffic)"]
-        LANDING_FO["🌐 FlowOFF.xyz (Landing)"]
-        PWA_FO["📱 FlowOFF PWA (Client App)"]
+        FLOWCLOSER["FlowCloser (CRM/Sales Agent)"]
+        AGENT_FO["Agent FlowOFF (Traffic)"]
+        LANDING_FO["FlowOFF.xyz (Landing)"]
+        PWA_FO["FlowOFF PWA (Client App)"]
         
         %% Ops Flow
         LANDING_FO --> AGENT_FO
@@ -32,13 +32,13 @@ graph TB
         PWA_FO <--> FLOWCLOSER
     end
 
-    subgraph FACTORY["🏭 NEO SMART FACTORY (The Forge)"]
+    subgraph FACTORY["NEO SMART FACTORY (The Forge)"]
         direction TB
-        SF_HUB["⚙️ Factory Hub API"]
-        SF_CORE["📜 Smart Core (Contracts)"]
-        SF_CLI["💻 NSF CLI (nsf)"]
-        SF_UI["🖥️ Smart UI (Deployer)"]
-        SF_MOBILE["📱 Smart UI Mobile"]
+        SF_HUB["Factory Hub API"]
+        SF_CORE["Smart Core (Contracts)"]
+        SF_CLI["NSF CLI (nsf)"]
+        SF_UI["Smart UI (Deployer)"]
+        SF_MOBILE["Smart UI Mobile"]
         
         %% Factory Flow
         SF_UI --> SF_HUB
@@ -47,33 +47,33 @@ graph TB
         SF_MOBILE --> SF_HUB
     end
 
-    subgraph FINANCE["💰 FLOWPAY SOVEREIGN (The Treasury)"]
+    subgraph FINANCE["FLOWPAY SOVEREIGN (The Treasury)"]
         direction TB
-        FP_GATE["💸 FlowPay Gateway (PIX/Crypto)"]
-        FP_CORE["🧠 FlowPay Core (Logic)"]
-        FP_LIQ["💧 Liquidity Pools (Dex)"]
+        FP_GATE["FlowPay Gateway (PIX/Crypto)"]
+        FP_CORE["FlowPay Core (Logic)"]
+        FP_LIQ["Liquidity Pools (Dex)"]
         
         %% Finance Flow
         FP_GATE --> FP_CORE
         FP_CORE --> FP_LIQ
     end
 
-    subgraph PRODUCTS["🎮 DApps & GOVERNANCE (The Soul)"]
+    subgraph PRODUCTS["DApps & GOVERNANCE (The Soul)"]
         direction LR
-        FLUXX["⚖️ FluXX DAO (Governance)"]
-        WOD["🏋️ WOD[x] Pro (Move2Earn)"]
-        NEO_LAND["🌍 NeoProtocol.space"]
+        FLUXX["FluXX DAO (Governance)"]
+        WOD["WOD[x] Pro (Move2Earn)"]
+        NEO_LAND["NeoProtocol.space"]
         
         %% Governance Flow
         FLUXX -.-> WOD
     end
 
-    subgraph INFRA["☁️ SOVEREIGN INFRASTRUCTURE (The Ground)"]
-        RAILWAY["🚂 Railway (Compute)"]
-        BASE["🔵 Base Chain (L2 Settlement)"]
-        IPFS["📦 IPFS (Decentralized Storage)"]
-        LLM["🧠 Anthropic (Intelligence)"]
-        WA["💬 WhatsApp/Telegram (Channels)"]
+    subgraph INFRA["SOVEREIGN INFRASTRUCTURE (The Ground)"]
+        RAILWAY["Railway (Compute)"]
+        BASE["Base Chain (L2 Settlement)"]
+        IPFS["IPFS (Decentralized Storage)"]
+        LLM["Anthropic (Intelligence)"]
+        WA["WhatsApp/Telegram (Channels)"]
     end
 
     %% ======================================================================================
@@ -104,12 +104,12 @@ graph TB
     %%                                      STYLING
     %% ======================================================================================
     
-    classDef core fill:#ff4444,stroke:#aa0000,stroke-width:4px,color:#fff
-    classDef ops fill:#ff00ff,stroke:#aa00aa,stroke-width:2px,color:#fff
-    classDef eng fill:#00ccff,stroke:#0088aa,stroke-width:2px,color:#000
-    classDef fin fill:#00ffcc,stroke:#00aba9,stroke-width:2px,color:#000
-    classDef prod fill:#ffcc00,stroke:#aa8800,stroke-width:2px,color:#000
-    classDef infra fill:#222,stroke:#666,stroke-width:1px,color:#ddd #dashed
+    classDef core fill:#ccff00,stroke:#669900,stroke-width:3px,color:#000
+    classDef ops fill:#e0e0e0,stroke:#666,stroke-width:1px,color:#000
+    classDef eng fill:#e8e8e8,stroke:#666,stroke-width:1px,color:#000
+    classDef fin fill:#dcdcdc,stroke:#666,stroke-width:1px,color:#000
+    classDef prod fill:#f5f5f5,stroke:#666,stroke-width:1px,color:#000
+    classDef infra fill:#333,stroke:#fff,stroke-width:1px,color:#fff,stroke-dasharray: 5 5
     
     class GATEWAY,NEXUS,MIO,ADAPTER,ANALYSIS core
     class FLOWCLOSER,AGENT_FO,LANDING_FO,PWA_FO ops

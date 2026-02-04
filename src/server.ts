@@ -1,7 +1,9 @@
 import express from 'express';
 import dotenv from 'dotenv';
+import { createServer } from 'http';
 import eventsRouter from './routes/events.js';
 import { loadReactors } from './reactors/index.js';
+import { setupWebSocketServer } from './websocket/server.js';
 
 dotenv.config();
 
@@ -53,10 +55,18 @@ app.use((err: Error, req: express.Request, res: express.Response, next: express.
 // Initialize Nexus Reactors
 loadReactors();
 
+
+
+const server = createServer(app);
+
+// Initialize WebSocket Server
+setupWebSocketServer(server);
+
 // Start server
-app.listen(PORT, () => {
+server.listen(PORT, () => {
     console.log(`[NEXUS] 🚀 Server running on port ${PORT}`);
     console.log(`[NEXUS] 🔗 Event ingress: http://localhost:${PORT}/api/events`);
     console.log(`[NEXUS] 📊 Event log: http://localhost:${PORT}/api/events/log`);
+    console.log(`[NEXUS] 🔌 WebSocket: ws://localhost:${PORT}`);
     console.log(`[NEXUS] ❤️  Health check: http://localhost:${PORT}/health`);
 });

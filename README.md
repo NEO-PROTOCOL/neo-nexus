@@ -1,20 +1,20 @@
 <!-- markdownlint-disable MD003 MD007 MD013 MD022 MD023 MD025 MD029 MD032 MD033 MD034 -->
 ```text
 ========================================
-    NEXUS OPERATIONS MANUAL
+    NΞØ NEXUS - PROTOCOL CORE
 ========================================
-[####] System PROTOCOL NEXUS ......... OK
+[####] System Event Bus .............. OK
 [####] Status ACTIVE (v1.0) .......... OK
-[####] Target Architects & Operators . OK
+[####] Role Central Nervous System ... OK
 ========================================
 ```
 
 ## 1. O Que É o Nexus?
 
 O **Nexus** é o sistema nervoso central
-do NEØBOT. Substitui comunicação caótica
-ponto-a-ponto por um **Barramento de
-Eventos Unificado**.
+do ecossistema NΞØ Protocol. Substitui
+comunicação caótica ponto-a-ponto por um
+**Barramento de Eventos Unificado**.
 
 ```text
 ▓▓▓ ANTES vs AGORA
@@ -31,215 +31,274 @@ Eventos Unificado**.
 
 ────────────────────────────────────────
 
-## 2. Arquitetura Técnica
+## 2. Papel no Ecossistema NΞØ
 
-O Nexus roda dentro do processo Gateway.
+O Nexus conecta todos os nós do protocolo
+através de eventos, garantindo comunicação
+desacoplada e resiliente.
 
 ```text
 ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-┃ NEXUS CORE
+┃ ECOSSISTEMA NΞØ PROTOCOL
 ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-┃ ░ src/core/nexus.ts
-┃ ░ Event Bus (EventEmitter)
-┃ ░ Reactors (IFTTT Logic)
-┃ ░ Persistence (SQLite)
+┃ ░ FlowPay (Pagamentos)
+┃ ░ Smart Factory (Contratos)
+┃ ░ Neobot (Comunicação)
+┃ ░ Fluxx (Liquidez)
+┃ ░ FlowOFF (MiniApp TON)
+┃ ░
+┃ ░ → NEXUS ← (Centro de Comando)
+```
+
+────────────────────────────────────────
+
+## 3. Nós Conectados
+
+```text
+▓▓▓ FLOWPAY
+────────────────────────────────────────
+└─ Função
+   Gateway de pagamentos PIX/Crypto
+
+└─ Integração com Nexus
+   Dispara PAYMENT_RECEIVED, PAYMENT_FAILED
+
+└─ Repositório
+   <https://github.com/NEO-PROTOCOL/
+   flowpay>
 ```
 
 ```text
-▓▓▓ EVENTOS PRINCIPAIS
+▓▓▓ SMART FACTORY
 ────────────────────────────────────────
-└─ PAYMENT_RECEIVED
-   Disparado quando dinheiro entra
-   (FlowPay PIX/Crypto)
+└─ Função
+   Fábrica de contratos inteligentes
+   (Jettons TON)
 
-└─ MINT_REQUESTED
-   Nexus traduz pagamento em ordem
-   de serviço para Smart Factory
+└─ Integração com Nexus
+   Dispara MINT_CONFIRMED,
+   CONTRACT_DEPLOYED
 
-└─ MINT_CONFIRMED
-   Fábrica avisa: contrato on-chain
-
-└─ NOTIFICATION_DISPATCH
-   Nexus avisa usuário via WhatsApp
-```
-
-────────────────────────────────────────
-
-## 3. Infraestrutura (Onde Rodar?)
-
-Para produção, Nexus precisa estabilidade.
-
-```text
-▓▓▓ OPÇÃO A: RAILWAY (Atual)
-────────────────────────────────────────
-└─ Vantagens
-   • Deploy contínuo via GitHub
-   • Logs fáceis, SSL automático
-   • Já configurado (railway.json)
-
-└─ Configuração
-   Garanta variáveis de ambiente
-   (API keys) no Railway Dashboard
+└─ Repositório
+   <https://github.com/NEO-PROTOCOL/
+   neo-smart-factory>
 ```
 
 ```text
-▓▓▓ OPÇÃO B: VPS SOBERANA (Futuro)
+▓▓▓ NEOBOT
 ────────────────────────────────────────
-└─ Vantagens
-   • Controle total, custo fixo
-   • IP estático para whitelists
+└─ Função
+   Gateway de comunicação multi-canal
+   (WhatsApp, Telegram, Discord)
 
-└─ Setup
-   Docker Compose + Redis
-   (persistência de fila)
-```
+└─ Integração com Nexus
+   Consome NOTIFICATION_DISPATCH,
+   LEAD_QUALIFIED
 
-**Veredito:** Mantenha **Railway** por
-enquanto. VPS só quando volume exigir
-IP fixo para whitelisting bancário.
-
-────────────────────────────────────────
-
-## 4. Integrações (Conectar Nós)
-
-Trabalho para os próximos dias.
-
-```text
-▓▓▓ A. FLOWPAY → NEXUS (Alta Prioridade)
-────────────────────────────────────────
-└─ No FlowPay
-   Configurar Webhook apontando para:
-   https://core.neoprotocol.space/
-   api/webhook/flowpay
-
-└─ No Neobot (Nexus)
-   Criar endpoint HTTP que recebe JSON,
-   valida assinatura HMAC e dispara:
-   Nexus.dispatch(
-     ProtocolEvent.PAYMENT_RECEIVED,
-     data
-   )
+└─ Repositório
+   <https://github.com/NEO-PROTOCOL/
+   neobot>
 ```
 
 ```text
-▓▓▓ B. NEXUS → SMART FACTORY
+▓▓▓ FLUXX DAO
 ────────────────────────────────────────
-└─ Na Smart Factory
-   Garantir API existe:
-   POST /api/mint (com API key)
+└─ Função
+   Protocolo de liquidez e governança
 
-└─ No Neobot (Nexus)
-   No Reactor PAYMENT_RECEIVED,
-   implementar chamada:
-   fetch('https://smart.neoprotocol.space
-         /api/mint', ...)
+└─ Integração com Nexus
+   Dispara PROPOSAL_CREATED, VOTE_CAST
 ```
 
 ```text
-▓▓▓ C. SMART FACTORY → NEXUS (Callback)
+▓▓▓ NEO FLOWOFF AGENCY
 ────────────────────────────────────────
-└─ Na Smart Factory
-   Ao terminar deploy, chamar:
-   POST /api/webhook/factory
-   (com endereço do contrato)
+└─ Função
+   Interface TON e serviços de agência
 
-└─ No Neobot (Nexus)
-   Disparar ProtocolEvent.MINT_CONFIRMED
-   e notificar cliente
-```
+└─ Integração com Nexus
+   Dispara TRAFFIC_CONVERSION,
+   SERVICE_REQUESTED
 
-────────────────────────────────────────
-
-## 5. Roadmap (Próximos 3 Dias)
-
-```text
-[#---] Dia 1: Ponte de Entrada ..... WARN
-       └─ Criar endpoint HTTP no Neobot
-          para receber Webhooks externos
-       └─ Implementar validação HMAC
-          (aceitar apenas chamadas legítimas)
-
-[#---] Dia 2: Lógica de Reação ..... WARN
-       └─ Implementar Reactor real:
-          PAYMENT_RECEIVED → Smart Factory
-       └─ Tratar erros: Retry se Factory
-          estiver offline
-
-[#---] Dia 3: Feedback ............. WARN
-       └─ Implementar Reactor:
-          MINT_CONFIRMED → WhatsApp/Telegram
-       └─ Mensagem: "Seu contrato foi
-          deployado! Hash: 0x123..."
-```
-
-────────────────────────────────────────
-
-## 6. Configuração GitHub/Railway
-
-Para CI/CD fluir corretamente:
-
-```text
-▓▓▓ SECRETS NECESSÁRIOS
-────────────────────────────────────────
-└─ NEXUS_SECRET
-   Chave HMAC para validar webhooks
-   (gerar: openssl rand -hex 32)
-
-└─ SMART_FACTORY_API_KEY
-   Autenticação para chamar Factory
-
-└─ FLOWPAY_WEBHOOK_SECRET
-   Validar assinaturas do FlowPay
+└─ Repositório
+   <https://github.com/NEO-PROTOCOL/
+   neo-flowoff-pwa>
 ```
 
 ```text
-▓▓▓ PROTEÇÃO DE BRANCH
+▓▓▓ WOD [X] PRO
 ────────────────────────────────────────
-└─ Branch main protegida
-└─ PRs devem passar em:
-   • npm audit (segurança)
-   • npm run build (compilação)
-   • Análise de código (se houver)
+└─ Função
+   Move2Earn e Gamificação
+
+└─ Integração com Nexus
+   Dispara WORKOUT_COMPLETED,
+   REWARD_CLAIMED
+```
+
+```text
+▓▓▓ NEO AGENT NODE
+────────────────────────────────────────
+└─ Função
+   Nó de Agentes Autônomos
+
+└─ Integração com Nexus
+   Dispara TASK_COMPLETED, AGENT_ALERT
+```
+
+```text
+▓▓▓ NEO PROTOCOL CORE
+────────────────────────────────────────
+└─ Função
+    Governança On-Chain e Staking
+
+└─ Integração com Nexus
+   Dispara STAKING_DEPOSITED,
+   GOVERNANCE_UPDATED
 ```
 
 ────────────────────────────────────────
 
-## 7. Links Rápidos
+## 4. Fluxo de Eventos Típico
+
+```text
+▓▓▓ CRIAÇÃO DE TOKEN (Exemplo)
+────────────────────────────────────────
+1. Usuário paga via FlowPay
+   └─ FlowPay → Nexus
+      PAYMENT_RECEIVED
+
+2. Nexus valida e dispara
+   └─ Nexus → Smart Factory
+      MINT_REQUESTED
+
+3. Factory deploya contrato
+   └─ Smart Factory → Nexus
+      MINT_CONFIRMED
+
+4. Nexus notifica usuário
+   └─ Nexus → Neobot
+      NOTIFICATION_DISPATCH
+
+5. Usuário recebe confirmação
+   └─ WhatsApp: "Token deployado!
+      Hash: 0x123..."
+```
+
+────────────────────────────────────────
+
+## 5. Filosofia de Design
+
+```text
+▓▓▓ PRINCÍPIOS NEXUS
+────────────────────────────────────────
+└─ Desacoplamento
+   Nós não se conhecem diretamente.
+   Apenas conhecem eventos.
+
+└─ Resiliência
+   Se um nó cai, Nexus retenta.
+   Sistema continua operando.
+
+└─ Auditabilidade
+   Todo evento é registrado.
+   Rastreabilidade completa.
+
+└─ Soberania
+   Sem dependências externas críticas.
+   Controle total do fluxo.
+```
+
+────────────────────────────────────────
+
+## 6. Documentação Técnica
+
+Para detalhes de implementação, setup e
+configuração, consulte:
+
+- **Setup Técnico:** `docs/SETUP.md`
+- **Arquitetura:** `docs/ARCHITECTURE.md`
+- **Plano de Implementação:**
+  `docs/IMPLEMENTATION_PLAN.md`
+- **Bootstrap:** `docs/BOOTSTRAP.md`
+- **Ecosystem:** `config/ecosystem.json`
+
+────────────────────────────────────────
+
+## 7. Status do Projeto
+
+```text
+[####] Phase 1: Foundation ........... OK
+       └─ Estrutura básica
+       └─ Event Bus implementado
+       └─ Docker configurado
+
+[#---] Phase 2: Integration ........ WARN
+       └─ FlowPay webhook (pendente)
+       └─ Smart Factory API (pendente)
+       └─ Neobot notifications (pendente)
+
+[----] Phase 3: Production ......... PEND
+       └─ Monitoring e alertas
+       └─ Retry logic avançado
+       └─ Métricas e dashboards
+```
+
+────────────────────────────────────────
+
+## 8. Visão de Futuro
+
+O Nexus é a fundação para:
+
+- **Automação Total:** Workflows complexos
+  sem intervenção manual
+
+- **Escalabilidade:** Adicionar novos nós
+  sem modificar código existente
+
+- **Inteligência:** IA pode observar
+  eventos e tomar decisões
+
+- **Governança:** Comunidade pode votar
+  em novos reactors via DAO
+
+────────────────────────────────────────
+
+## 9. Links Rápidos
 
 - **Repositório:**
   <https://github.com/NEO-PROTOCOL/neo-nexus>
 
-- **Arquitetura:**
-  `ARCHITECTURE.md`
+- **Ecosystem Map:**
+  <https://neo-protocol.github.io/ecosystem>
 
-- **Plano de Implementação:**
-  `IMPLEMENTATION_PLAN.md`
+- **Documentation:**
+  <https://docs.neoprotocol.space>
 
-- **Bootstrap:**
-  `BOOTSTRAP.md`
-
-- **Ecosystem:**
-  `config/ecosystem.json`
+- **Status Page:**
+  <https://status.neoprotocol.space>
 
 ────────────────────────────────────────
 
-## 8. Comandos Úteis
+## 10. Contribuindo
 
-```bash
-# Instalar dependências
-npm install
+O Nexus é código aberto e aceita
+contribuições da comunidade.
 
-# Build TypeScript
-npm run build
+```text
+▓▓▓ COMO CONTRIBUIR
+────────────────────────────────────────
+└─ Fork o repositório
+└─ Crie uma branch feature
+└─ Implemente sua mudança
+└─ Adicione testes
+└─ Abra um Pull Request
 
-# Rodar em dev
-npm run dev
-
-# Health check
-curl http://localhost:3000/health
-
-# Deploy Railway
-git push origin main
+└─ Padrões
+   • Conventional Commits
+   • TypeScript strict mode
+   • Testes obrigatórios
+   • Documentação atualizada
 ```
 
 ────────────────────────────────────────

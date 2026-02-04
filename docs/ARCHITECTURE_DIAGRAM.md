@@ -16,67 +16,71 @@
 
 ```mermaid
 graph TB
-    subgraph External["🌐 EXTERNAL NODES"]
-        FLOWPAY["💰 FlowPay<br/>PIX/Crypto Gateway"]
-        FACTORY["🏭 Smart Factory<br/>Token Deployer"]
-        NEOBOT["🤖 Neobot Core<br/>WhatsApp/Telegram"]
-        FLUXX["⚖️ Fluxx DAO<br/>Governance"]
+    subgraph External["EXTERNAL NODES"]
+        FLOWPAY["FlowPay<br/>PIX/Crypto Gateway"]
+        FACTORY["Smart Factory<br/>Token Deployer"]
+        NEOBOT["Neobot Core<br/>WhatsApp/Telegram"]
+        FLUXX["Fluxx DAO<br/>Governance"]
+        FLOWOFF["FlowOFF<br/>Agency Services"]
+        WOD["WOD [X]<br/>Move2Earn"]
+        AGENT["Agent Node<br/>Autonomous Tasks"]
+        PROTOCOL["Protocol Core<br/>L1 Staking"]
     end
 
-    subgraph Nexus["⚡ NEO NEXUS (Orchestrator)"]
+    subgraph Nexus["NEO NEXUS (Orchestrator)"]
         direction TB
         
-        subgraph API["🌐 HTTP API Layer"]
+        subgraph API["HTTP API Layer"]
             HEALTH["/health<br/>Health Check"]
             EVENTS["/api/events<br/>Event Ingress"]
             LOG["/api/events/log<br/>Audit Trail"]
         end
         
-        subgraph Auth["🔐 Security Layer"]
+        subgraph Auth["Security Layer"]
             HMAC["HMAC-SHA256<br/>Signature Validation"]
             CORS["CORS<br/>Origin Control"]
         end
         
-        subgraph Core["🧠 Core Event Bus"]
+        subgraph Core["Core Event Bus"]
             EVENTBUS["Protocol Nexus<br/>EventEmitter"]
             DISPATCH["dispatch()<br/>Event Router"]
             LISTEN["onEvent()<br/>Subscriber"]
         end
         
-        subgraph Persistence["💾 Persistence Layer"]
+        subgraph Persistence["Persistence Layer"]
             DB["SQLite Database<br/>nexus.db"]
             PERSIST["persistEvent()<br/>Audit Log"]
             QUERY["getEventLog()<br/>Query History"]
         end
         
-        subgraph Reactors["⚙️ Reactors (IFTTT Logic)"]
-            R1["Payment → Mint<br/>Reactor"]
-            R2["Mint → Notify<br/>Reactor"]
+        subgraph Reactors["Reactors (IFTTT Logic)"]
+            R1["Payment -> Mint<br/>Reactor"]
+            R2["Mint -> Notify<br/>Reactor"]
             R3["Custom<br/>Reactors"]
         end
     end
 
-    %% External → Nexus Flow
+    %% External -> Nexus Flow
     FLOWPAY -->|"POST /api/events<br/>X-Nexus-Signature"| EVENTS
     FACTORY -->|"POST /api/events<br/>MINT_CONFIRMED"| EVENTS
     FLUXX -->|"POST /api/events<br/>PROPOSAL_CREATED"| EVENTS
     
-    %% API → Auth → Core Flow
+    %% API -> Auth -> Core Flow
     EVENTS --> HMAC
     HMAC --> CORS
     CORS --> DISPATCH
     
-    %% Core → Persistence
+    %% Core -> Persistence
     DISPATCH --> PERSIST
     PERSIST --> DB
     
-    %% Core → Reactors
+    %% Core -> Reactors
     DISPATCH --> LISTEN
     LISTEN --> R1
     LISTEN --> R2
     LISTEN --> R3
     
-    %% Reactors → External
+    %% Reactors -> External
     R1 -->|"POST /api/mint<br/>Bearer Token"| FACTORY
     R2 -->|"WebSocket<br/>Notification"| NEOBOT
     
@@ -84,15 +88,15 @@ graph TB
     LOG --> QUERY
     QUERY --> DB
     
-    %% Styling
-    classDef external fill:#ff6b6b,stroke:#c92a2a,stroke-width:2px,color:#fff
-    classDef api fill:#4dabf7,stroke:#1971c2,stroke-width:2px,color:#fff
-    classDef auth fill:#ffd43b,stroke:#f08c00,stroke-width:2px,color:#000
-    classDef core fill:#51cf66,stroke:#2f9e44,stroke-width:3px,color:#000
-    classDef persist fill:#a78bfa,stroke:#7c3aed,stroke-width:2px,color:#fff
-    classDef reactor fill:#ff8787,stroke:#fa5252,stroke-width:2px,color:#fff
+    %% Styling - Grayscale & Lime Green
+    classDef external fill:#e0e0e0,stroke:#333,stroke-width:1px,color:#000
+    classDef api fill:#f5f5f5,stroke:#999,stroke-width:1px,color:#000
+    classDef auth fill:#dcdcdc,stroke:#666,stroke-width:1px,color:#000
+    classDef core fill:#ccff00,stroke:#669900,stroke-width:3px,color:#000
+    classDef persist fill:#d3d3d3,stroke:#666,stroke-width:1px,color:#000
+    classDef reactor fill:#c0c0c0,stroke:#444,stroke-width:1px,color:#000
     
-    class FLOWPAY,FACTORY,NEOBOT,FLUXX external
+    class FLOWPAY,FACTORY,NEOBOT,FLUXX,FLOWOFF,WOD,AGENT,PROTOCOL external
     class HEALTH,EVENTS,LOG api
     class HMAC,CORS auth
     class EVENTBUS,DISPATCH,LISTEN core
@@ -106,14 +110,14 @@ graph TB
 
 ```mermaid
 sequenceDiagram
-    participant FP as 💰 FlowPay
-    participant NX as ⚡ Nexus API
-    participant AU as 🔐 Auth
-    participant EB as 🧠 Event Bus
-    participant DB as 💾 Database
-    participant R1 as ⚙️ Payment→Mint
-    participant SF as 🏭 Smart Factory
-    participant NB as 🤖 Neobot
+    participant FP as FlowPay
+    participant NX as Nexus API
+    participant AU as Auth
+    participant EB as Event Bus
+    participant DB as Database
+    participant R1 as Payment->Mint
+    participant SF as Smart Factory
+    participant NB as Neobot
 
     Note over FP,NB: Payment Flow (End-to-End)
     
@@ -153,29 +157,29 @@ sequenceDiagram
 
 ```mermaid
 flowchart LR
-    subgraph Input["📥 INPUT"]
+    subgraph Input["INPUT"]
         WH1["FlowPay Webhook"]
         WH2["Factory Webhook"]
         WH3["Fluxx Webhook"]
     end
     
-    subgraph Validation["🔐 VALIDATION"]
+    subgraph Validation["VALIDATION"]
         SIG["HMAC Signature<br/>Verification"]
         TYPE["Event Type<br/>Validation"]
         PAYLOAD["Payload<br/>Schema Check"]
     end
     
-    subgraph Processing["⚡ PROCESSING"]
+    subgraph Processing["PROCESSING"]
         BUS["Event Bus<br/>Dispatch"]
         REACT["Reactors<br/>Execute"]
     end
     
-    subgraph Storage["💾 STORAGE"]
+    subgraph Storage["STORAGE"]
         AUDIT["Audit Log<br/>(SQLite)"]
         METRICS["Metrics<br/>(Future)"]
     end
     
-    subgraph Output["📤 OUTPUT"]
+    subgraph Output["OUTPUT"]
         API1["Smart Factory API"]
         API2["Neobot WebSocket"]
         API3["External Services"]
@@ -198,11 +202,11 @@ flowchart LR
     
     AUDIT --> METRICS
     
-    style Input fill:#e3f2fd
-    style Validation fill:#fff3e0
-    style Processing fill:#e8f5e9
-    style Storage fill:#f3e5f5
-    style Output fill:#fce4ec
+    style Input fill:#e0e0e0
+    style Validation fill:#f0f0f0
+    style Processing fill:#ccff00
+    style Storage fill:#dcdcdc
+    style Output fill:#e8e8e8
 ```
 
 ────────────────────────────────────────

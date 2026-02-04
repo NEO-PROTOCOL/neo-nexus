@@ -69,9 +69,9 @@ cp /Users/nettomello/CODIGOS/neobot/docs/neo-protocol/ECOSYSTEM_MAP.mermaid \
 **Manual Edit Required:**
 Open `docs/ECOSYSTEM_MAP.mermaid` and add visual emphasis to NEXUS node:
 ```mermaid
-NEXUS["⚡ PROTOCOL NEXUS (Event Bus)"]
+NEXUS["PROTOCOL NEXUS (Event Bus)"]
 ```
-Change styling to use a distinct color (e.g., add `fill:#ff0000` in classDef).
+Change styling to use lime green (e.g., add `fill:#ccff00` in classDef).
 
 ---
 
@@ -107,10 +107,10 @@ cat > /Users/nettomello/CODIGOS/neo-nexus/config/nodes.json << 'EOF'
   },
   {
     "id": "neobot",
-    "name": "Neobot Core",
+    "name": "Neobot Core (FlowCloser)",
     "webhookUrl": "https://core.neoprotocol.space/api/webhook/nexus",
     "apiKey": "NEOBOT_API_KEY",
-    "events": ["NOTIFICATION_DISPATCH"]
+    "events": ["NOTIFICATION_DISPATCH", "LEAD_QUALIFIED"]
   },
   {
     "id": "fluxx-dao",
@@ -118,6 +118,34 @@ cat > /Users/nettomello/CODIGOS/neo-nexus/config/nodes.json << 'EOF'
     "webhookUrl": "https://fluxx.neoprotocol.space/api/webhook/nexus",
     "apiKey": "FLUXX_API_KEY",
     "events": ["PROPOSAL_CREATED", "VOTE_CAST"]
+  },
+  {
+    "id": "neo-flowoff",
+    "name": "NEO FlowOFF Agency",
+    "webhookUrl": "https://flowoff.xyz/api/webhook/nexus",
+    "apiKey": "FLOWOFF_API_KEY",
+    "events": ["TRAFFIC_CONVERSION", "SERVICE_REQUESTED"]
+  },
+  {
+    "id": "wod-x-pro",
+    "name": "WOD [X] PRO",
+    "webhookUrl": "https://app.wodx.pro/api/webhook/nexus",
+    "apiKey": "WOD_API_KEY",
+    "events": ["WORKOUT_COMPLETED", "REWARD_CLAIMED"]
+  },
+  {
+    "id": "neo-agent-full",
+    "name": "NEO Agent Node",
+    "webhookUrl": "https://agent-node.neoprotocol.space/api/webhook/nexus",
+    "apiKey": "AGENT_NODE_API_KEY",
+    "events": ["TASK_COMPLETED", "AGENT_ALERT"]
+  },
+  {
+    "id": "neo-protocol",
+    "name": "NEO Protocol Core",
+    "webhookUrl": "https://neoprotocol.space/api/webhook/nexus",
+    "apiKey": "PROTOCOL_API_KEY",
+    "events": ["STAKING_DEPOSITED", "GOVERNANCE_UPDATED"]
   }
 ]
 EOF
@@ -193,8 +221,8 @@ pnpm install
 
 **Expected Output:**
 ```
-✓ Dependencies installed successfully
-✓ 5 packages added
+[OK] Dependencies installed successfully
+[OK] 5 packages added
 ```
 
 ---
@@ -221,7 +249,7 @@ pnpm dev
 
 **File:** `/Users/nettomello/CODIGOS/neobot/config/ecosystem.json`
 
-**Status:** ✅ Already updated (neo-nexus entry exists)
+**Status:** [OK] Already updated (neo-nexus entry exists)
 
 **Verification:**
 ```bash

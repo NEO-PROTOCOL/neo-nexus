@@ -19,25 +19,25 @@ sobre o motor openclaw, seguindo os principios Web3.
 
 ```
 ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-┃ NEO PROTOCOL STACK (100% Autonomous)                            ┃
+┃ NEO PROTOCOL STACK (100% Autonomous)                           ┃
 ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
-┃ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ┃
-┃ ░ ░  NEO Layer (Descentralizada)                         ░ ░ ┃
-┃ ░ ░  • NEO Skills Registry (IPFS)                        ░ ░ ┃
-┃ ░ ░  • NEO Identity System (mio-system)                   ░ ░ ┃
-┃ ░ ░  • NEO Docs (Self-hosted)                             ░ ░ ┃
-┃ ░ ░  • NEO Gateway Extensions (Web3-native)               ░ ░ ┃
-┃ ░ ░  • NEO Dashboard (iOS-style)                          ░ ░ ┃
-┃ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ┃
-┃                    Protocol Interface                           ┃
-┃ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ┃
-┃ ░ ░  Moltbot Core (Sincronizado c/ Upstream)              ░ ░ ┃
-┃ ░ ░  • Gateway Runtime (ws://...)                         ░ ░ ┃
-┃ ░ ░  • Channel Adapters (WhatsApp, Telegram, etc)         ░ ░ ┃
-┃ ░ ░  • Agent Runtime (Pi RPC)                             ░ ░ ┃
-┃ ░ ░  • Tool Execution Engine                              ░ ░ ┃
-┃ ░ ░  • Session Management                                 ░ ░ ┃
-┃ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ┃
+┃ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░    ┃
+┃ ░ ░  NEO Layer (Descentralizada)                           ░ ░ ┃
+┃ ░ ░  • NEO Skills Registry (IPFS)                          ░ ░ ┃
+┃ ░ ░  • NEO Identity System (mio-system)                    ░ ░ ┃
+┃ ░ ░  • NEO Docs (Self-hosted)                              ░ ░ ┃
+┃ ░ ░  • NEO Gateway Extensions (Web3-native)                ░ ░ ┃
+┃ ░ ░  • NEO Dashboard (iOS-style)                           ░ ░ ┃
+┃ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░    ┃
+┃                    Protocol Interface                          ┃
+┃ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░    ┃
+┃ ░ ░  Moltbot Core (Sincronizado c/ Upstream)               ░ ░ ┃
+┃ ░ ░  • Gateway Runtime (ws://...)                          ░ ░ ┃
+┃ ░ ░  • Channel Adapters (WhatsApp, Telegram, etc)          ░ ░ ┃
+┃ ░ ░  • Agent Runtime (Pi RPC)                              ░ ░ ┃
+┃ ░ ░  • Tool Execution Engine                               ░ ░ ┃
+┃ ░ ░  • Session Management                                  ░ ░ ┃
+┃ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░ ░    ┃ 
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 ```
 ```
@@ -49,14 +49,14 @@ sobre o motor openclaw, seguindo os principios Web3.
 ┌────────────────────────────────────────────────────────────────┐
 │ ▓▓▓ MANTEMOS SINCRONIZADO (Moltbot Core)                       │
 ├────────────────────────────────────────────────────────────────┤
-│ └─ Diretorio: src/ (core only)                                  │
-│    └─ src/gateway/ - Gateway WebSocket                          │
-│    └─ src/channels/ - WhatsApp, Telegram, Slack, etc            │
-│    └─ src/agents/ - Agent runtime (Pi RPC)                      │
-│    └─ src/sessions/ - Session management                        │
+│ └─ Diretorio: src/ (core only)                                 │
+│    └─ src/gateway/ - Gateway WebSocket                         │
+│    └─ src/channels/ - WhatsApp, Telegram, Slack, etc           │
+│    └─ src/agents/ - Agent runtime (Pi RPC)                     │
+│    └─ src/sessions/ - Session management                       │
 │    └─ src/infra/ - Health, Ledger, Notifiers                   │
 │    └─ src/process/ - Tool execution                            │
-│    └─ src/media/ - Media pipeline                               │
+│    └─ src/media/ - Media pipeline                              │
 │    └─ src/security/ - Security core                            │
 └────────────────────────────────────────────────────────────────┘
 ```
