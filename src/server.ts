@@ -1,20 +1,62 @@
 import express from 'express';
 import dotenv from 'dotenv';
+import eventsRouter from './routes/events.js';
+import { loadReactors } from './reactors/index.js';
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Middleware
 app.use(express.json());
+
+// CORS - Restrict to known origins in production
+const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || ['*'];
+app.use((req, res, next) => {
+    const origin = req.headers.origin;
+    if (allowedOrigins.includes('*') || (origin && allowedOrigins.includes(origin))) {
+        res.setHeader('Access-Control-Allow-Origin', origin || '*');
+        res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+        res.setHeader('Access-Control-Allow-Headers', 'Content-Type, X-Nexus-Signature');
+    }
+
+    if (req.method === 'OPTIONS') {
+        res.sendStatus(204);
+        return;
+    }
+
+    next();
+});
 
 // Health check
 app.get('/health', (req, res) => {
-    res.json({ status: 'ok', uptime: process.uptime() });
+    res.json({
+        status: 'ok',
+        uptime: process.uptime(),
+        timestamp: Date.now()
+    });
 });
 
-// TODO: Add event routes (see IMPLEMENTATION_PLAN.md Phase 2)
+// Event routes
+app.use('/api', eventsRouter);
 
+// Error handling middleware
+app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
+    console.error('[SERVER] Error:', err);
+    res.status(500).json({
+        error: 'Internal Server Error',
+        message: process.env.NODE_ENV === 'development' ? err.message : 'An error occurred'
+    });
+});
+
+// Initialize Nexus Reactors
+loadReactors();
+
+// Start server
 app.listen(PORT, () => {
-    console.log(`[NEXUS] Server running on port ${PORT}`);
+    console.log(`[NEXUS] 🚀 Server running on port ${PORT}`);
+    console.log(`[NEXUS] 🔗 Event ingress: http://localhost:${PORT}/api/events`);
+    console.log(`[NEXUS] 📊 Event log: http://localhost:${PORT}/api/events/log`);
+    console.log(`[NEXUS] ❤️  Health check: http://localhost:${PORT}/health`);
 });

@@ -1,5 +1,8 @@
 
 import EventEmitter from "events";
+import Database from "better-sqlite3";
+import { existsSync, mkdirSync } from "fs";
+import { join } from "path";
 
 /**
  * ============================================================================
@@ -60,9 +63,11 @@ export interface GovernancePayload {
 
 class ProtocolNexus extends EventEmitter {
     private static instance: ProtocolNexus;
+    private db: Database.Database;
 
     private constructor() {
         super();
+        this.db = this.initDatabase();
         this.setupLogger();
     }
 
@@ -71,6 +76,33 @@ class ProtocolNexus extends EventEmitter {
             ProtocolNexus.instance = new ProtocolNexus();
         }
         return ProtocolNexus.instance;
+    }
+
+    private initDatabase(): Database.Database {
+        // Ensure data directory exists
+        const dataDir = process.env.DATA_DIR || './data';
+        if (!existsSync(dataDir)) {
+            mkdirSync(dataDir, { recursive: true });
+        }
+
+        const dbPath = join(dataDir, 'nexus.db');
+        const db = new Database(dbPath);
+
+        // Create events table
+        db.exec(`
+            CREATE TABLE IF NOT EXISTS events (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                event TEXT NOT NULL,
+                payload TEXT NOT NULL,
+                source TEXT,
+                timestamp INTEGER NOT NULL
+            );
+            CREATE INDEX IF NOT EXISTS idx_event ON events(event);
+            CREATE INDEX IF NOT EXISTS idx_timestamp ON events(timestamp);
+        `);
+
+        console.log(`[NEXUS] 💾 Database initialized at ${dbPath}`);
+        return db;
     }
 
     private setupLogger() {
@@ -94,6 +126,64 @@ class ProtocolNexus extends EventEmitter {
      */
     public onEvent(event: ProtocolEvent, handler: (payload: any) => void) {
         this.on(event, handler);
+    }
+
+    /**
+     * Persist an event to the database for audit trail.
+     * @param event The ProtocolEvent type
+     * @param payload Event payload
+     * @param source Source IP or identifier (optional)
+     */
+    public async persistEvent(
+        event: ProtocolEvent,
+        payload: any,
+        source?: string
+    ): Promise<number> {
+        const stmt = this.db.prepare(`
+            INSERT INTO events (event, payload, source, timestamp)
+            VALUES (?, ?, ?, ?)
+        `);
+
+        const result = stmt.run(
+            event,
+            JSON.stringify(payload),
+            source || 'internal',
+            Date.now()
+        );
+
+        console.log(`[NEXUS] 💾 Event persisted: ${event} (id: ${result.lastInsertRowid})`);
+        return result.lastInsertRowid as number;
+    }
+
+    /**
+     * Retrieve event log from database.
+     * @param limit Maximum number of events to retrieve (default: 100)
+     * @param eventType Optional filter by event type
+     * @returns Array of event records
+     */
+    public getEventLog(
+        limit: number = 100,
+        eventType?: ProtocolEvent
+    ): Array<{
+        id: number;
+        event: string;
+        payload: string;
+        source: string;
+        timestamp: number;
+    }> {
+        let query = 'SELECT * FROM events';
+        const params: any[] = [];
+
+        if (eventType) {
+            query += ' WHERE event = ?';
+            params.push(eventType);
+        }
+
+        query += ' ORDER BY timestamp DESC LIMIT ?';
+        params.push(limit);
+
+        const stmt = this.db.prepare(query);
+        return stmt.all(...params) as any[];
     }
 }
 
