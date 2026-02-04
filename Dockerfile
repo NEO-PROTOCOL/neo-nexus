@@ -1,22 +1,19 @@
 FROM node:22-alpine
 
-# Install pnpm
-RUN npm install -g pnpm
-
 # Set working directory
 WORKDIR /app
 
 # Copy dependency files
-COPY package.json pnpm-lock.yaml* ./
+COPY package.json ./
 
-# Install dependencies
-RUN pnpm install --frozen-lockfile
+# Install dependencies (ignore scripts for better-sqlite3)
+RUN npm install --ignore-scripts
 
 # Copy source code
 COPY . .
 
 # Build TypeScript
-RUN pnpm build
+RUN npm run build
 
 # Expose port
 EXPOSE 3000
