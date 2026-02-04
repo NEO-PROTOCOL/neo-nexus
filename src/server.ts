@@ -1,17 +1,40 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import { createServer } from 'http';
+import helmet from 'helmet';
+import rateLimit from 'express-rate-limit';
 import eventsRouter from './routes/events.js';
 import { loadReactors } from './reactors/index.js';
 import { setupWebSocketServer } from './websocket/server.js';
 
 dotenv.config();
 
+// Security Check in Production
+if (process.env.NODE_ENV === 'production' && !process.env.NEXUS_SECRET) {
+    console.error('❌ [FATAL] NEXUS_SECRET is required in production! Exiting...');
+    process.exit(1);
+}
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Security Middleware
+app.use(helmet());
+
+// Rate Limiting
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100, // Limit each IP to 100 requests per windowMs
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { error: 'Too many requests, please try again later.' }
+});
+
+// Apply rate limiting to all requests
+app.use(limiter);
+
 // Middleware
-app.use(express.json());
+app.use(express.json({ limit: '100kb' })); // Limit body size
 
 // CORS - Restrict to known origins in production
 const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || ['*'];
