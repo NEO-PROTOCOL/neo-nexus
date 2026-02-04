@@ -219,6 +219,29 @@ docker run -p 3000:3000 \
   neo-nexus
 ```
 
+## 7.1. Verificação de Segurança (WebSocket)
+
+O servidor agora exige autenticação para conexões WebSocket.
+
+```bash
+# Instalar wscat (ferramenta de teste)
+npm install -g wscat
+
+# Teste (Deve Falhar - 401 Unauthorized)
+wscat -c ws://localhost:3000
+
+# Teste (Deve Funcionar)
+wscat -c "ws://localhost:3000?token=SEU_NEXUS_SECRET"
+```
+
+Alternativamente, use o script local:
+
+```bash
+# Rodar teste automatizado
+npm install tsx -g
+npx tsx scripts/test-connection.ts
+```
+
 ────────────────────────────────────────
 
 ## 8. Estrutura de Diretórios
