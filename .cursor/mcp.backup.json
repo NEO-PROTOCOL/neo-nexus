@@ -1,0 +1,84 @@
+{
+  "mcpServers": {
+    "GitKraken": {
+      "command": "/opt/homebrew/bin/gk",
+      "args": [
+        "mcp",
+        "--host=cursor"
+      ],
+      "type": "stdio"
+    },
+    "docker-local": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@thelord/mcp-server-docker-npx"
+      ],
+      "type": "stdio"
+    },
+    "dockerhub": {
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "-e",
+        "HUB_PAT_TOKEN",
+        "mcp/dockerhub",
+        "--transport=stdio",
+        "--username=eryntt"
+      ],
+      "env": {
+        "HUB_PAT_TOKEN": "dckr_pat_NapU6b-A8EoCUCOEqPpXwJGwcUw"
+      }
+    },
+    "fetch": {
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "mcp/fetch"
+      ]
+    },
+    "brave-search": {
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "-e",
+        "BRAVE_API_KEY",
+        "mcp/brave-search"
+      ],
+      "env": {
+        "BRAVE_API_KEY": "BSAKuhR9uT5vzUJ1PS8ZSfraab4lOG9"
+      }
+    },
+    "github": {
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "-e",
+        "GITHUB_PERSONAL_ACCESS_TOKEN",
+        "mcp/github"
+      ],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "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"
+      }
+    },
+    "Notion": {
+      "url": "https://mcp.notion.com/mcp",
+      "headers": {}
+    },
+    "Neon": {
+      "type": "http",
+      "url": "https://mcp.neon.tech/mcp",
+      "headers": {
+        "Authorization": "Bearer napi_o47b2xp7gqkorp5iekv26z1vhci5e426hflrr9jl5o2s771m9pkun1fdbhgfezoy"
+      }
+    }
+  }
+}

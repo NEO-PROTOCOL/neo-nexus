@@ -1,0 +1,119 @@
+
+graph TB
+    %% ======================================================================================
+    %%                           NEØ PROTOCOL MASTER ARCHITECTURE
+    %% ======================================================================================
+    
+    subgraph NEOBOT["🧠 NEOBOT CORE (The Brain)"]
+        direction TB
+        GATEWAY["🚀 Gateway (WebSocket/HTTP)"]
+        NEXUS["⚡ PROTOCOL NEXUS (Event Bus)"]
+        MIO["🆔 MIO System (Identity Backend)"]
+        ADAPTER["🛡️ Sovereign Adapter"]
+        ANALYSIS["👁️ Sovereign Eye (Code Analysis)"]
+        
+        %% Core Wiring
+        GATEWAY --> NEXUS
+        NEXUS <--> MIO
+        NEXUS <--> ADAPTER
+        ADAPTER --> ANALYSIS
+    end
+
+    subgraph OPERATIONS["💼 FLOWOFF OPERATIONS (The Arms)"]
+        direction TB
+        FLOWCLOSER["💬 FlowCloser (CRM/Sales Agent)"]
+        AGENT_FO["🤖 Agent FlowOFF (Traffic)"]
+        LANDING_FO["🌐 FlowOFF.xyz (Landing)"]
+        PWA_FO["📱 FlowOFF PWA (Client App)"]
+        
+        %% Ops Flow
+        LANDING_FO --> AGENT_FO
+        AGENT_FO <--> FLOWCLOSER
+        PWA_FO <--> FLOWCLOSER
+    end
+
+    subgraph FACTORY["🏭 NEO SMART FACTORY (The Forge)"]
+        direction TB
+        SF_HUB["⚙️ Factory Hub API"]
+        SF_CORE["📜 Smart Core (Contracts)"]
+        SF_CLI["💻 NSF CLI (nsf)"]
+        SF_UI["🖥️ Smart UI (Deployer)"]
+        SF_MOBILE["📱 Smart UI Mobile"]
+        
+        %% Factory Flow
+        SF_UI --> SF_HUB
+        SF_CLI --> SF_HUB
+        SF_HUB --> SF_CORE
+        SF_MOBILE --> SF_HUB
+    end
+
+    subgraph FINANCE["💰 FLOWPAY SOVEREIGN (The Treasury)"]
+        direction TB
+        FP_GATE["💸 FlowPay Gateway (PIX/Crypto)"]
+        FP_CORE["🧠 FlowPay Core (Logic)"]
+        FP_LIQ["💧 Liquidity Pools (Dex)"]
+        
+        %% Finance Flow
+        FP_GATE --> FP_CORE
+        FP_CORE --> FP_LIQ
+    end
+
+    subgraph PRODUCTS["🎮 DApps & GOVERNANCE (The Soul)"]
+        direction LR
+        FLUXX["⚖️ FluXX DAO (Governance)"]
+        WOD["🏋️ WOD[x] Pro (Move2Earn)"]
+        NEO_LAND["🌍 NeoProtocol.space"]
+        
+        %% Governance Flow
+        FLUXX -.-> WOD
+    end
+
+    subgraph INFRA["☁️ SOVEREIGN INFRASTRUCTURE (The Ground)"]
+        RAILWAY["🚂 Railway (Compute)"]
+        BASE["🔵 Base Chain (L2 Settlement)"]
+        IPFS["📦 IPFS (Decentralized Storage)"]
+        LLM["🧠 Anthropic (Intelligence)"]
+        WA["💬 WhatsApp/Telegram (Channels)"]
+    end
+
+    %% ======================================================================================
+    %%                                SYSTEM INTERCONNECTIONS (NEXUS ROUTING)
+    %% ======================================================================================
+
+    %% 1. ORCHESTRATION (The Nexus bundles it all)
+    NEXUS == "Event: PAYMENT" ==> FP_GATE
+    NEXUS == "Event: MINT" ==> SF_HUB
+    NEXUS == "Event: NOTIFY" ==> FLOWCLOSER
+    
+    %% 2. INFRA CONNECTIONS
+    GATEWAY -.-> WA
+    GATEWAY -.-> RAILWAY
+    ADAPTER -.-> LLM
+    
+    %% 3. BUSINESS LOGIC FLOWS
+    FLOWCLOSER -- "Leads" --> FP_GATE
+    FP_CORE -- "Settle" --> BASE
+    SF_CORE -- "Deploy" --> BASE
+    SF_HUB -- "Store Metadata" --> IPFS
+    
+    %% 4. PRODUCT INTEGRATIONS
+    WOD -- "Rewards" --> FP_GATE
+    FLUXX -- "Rules" --> SF_CORE
+
+    %% ======================================================================================
+    %%                                      STYLING
+    %% ======================================================================================
+    
+    classDef core fill:#ff4444,stroke:#aa0000,stroke-width:4px,color:#fff
+    classDef ops fill:#ff00ff,stroke:#aa00aa,stroke-width:2px,color:#fff
+    classDef eng fill:#00ccff,stroke:#0088aa,stroke-width:2px,color:#000
+    classDef fin fill:#00ffcc,stroke:#00aba9,stroke-width:2px,color:#000
+    classDef prod fill:#ffcc00,stroke:#aa8800,stroke-width:2px,color:#000
+    classDef infra fill:#222,stroke:#666,stroke-width:1px,color:#ddd #dashed
+    
+    class GATEWAY,NEXUS,MIO,ADAPTER,ANALYSIS core
+    class FLOWCLOSER,AGENT_FO,LANDING_FO,PWA_FO ops
+    class SF_HUB,SF_CORE,SF_CLI,SF_UI,SF_MOBILE eng
+    class FP_GATE,FP_CORE,FP_LIQ fin
+    class FLUXX,WOD,NEO_LAND prod
+    class RAILWAY,BASE,IPFS,LLM,WA infra
