@@ -20,13 +20,23 @@
     ]
   },
   {
-    "id": "neobot",
-    "name": "Neobot Core (FlowCloser)",
-    "webhookUrl": "https://core.neoprotocol.space/api/webhook/nexus",
+    "id": "neobot-architect",
+    "name": "Neobot (Architect Agent)",
+    "webhookUrl": "https://dev.neoprotocol.space/api/webhook/nexus",
     "apiKey": "NEOBOT_API_KEY",
     "events": [
-      "NOTIFICATION_DISPATCH",
-      "LEAD_QUALIFIED"
+      "TASK_COMPLETED",
+      "BUILD_STATUS"
+    ]
+  },
+  {
+    "id": "flowcloser",
+    "name": "FlowCloser (Notification Agent)",
+    "webhookUrl": "https://sales.neoprotocol.space/api/webhook/nexus",
+    "apiKey": "FLOWCLOSER_API_KEY",
+    "events": [
+      "MINT_CONFIRMED",
+      "PAYMENT_RECEIVED"
     ]
   },
   {
