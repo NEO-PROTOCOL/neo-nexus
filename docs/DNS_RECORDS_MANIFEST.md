@@ -11,6 +11,7 @@ Format: [Subdomain] -> [Target URL]
 ▓▓▓ REGISTRY: SPACESHIP.COM
 ────────────────────────────────────────
 Primary Domain: <neoprotocol.space>
+(Backbone Infrastructure)
 
 └─ HOST: nexus
    └─ FULL: nexus.neoprotocol.space
@@ -20,28 +21,33 @@ Primary Domain: <neoprotocol.space>
    └─ FULL: core.neoprotocol.space
    └─ DEST: <flowcloser-agent-production.up.railway.app>
 
-└─ HOST: factory
-   └─ FULL: factory.neoprotocol.space
-   └─ DEST: <smart-factory-production.up.railway.app>
-
 └─ HOST: id
    └─ FULL: id.neoprotocol.space
    └─ DEST: <mio-system-production.up.railway.app>
 
-└─ HOST: dashboard
-   └─ FULL: dashboard.neoprotocol.space
-   └─ DEST: <neo-dashboard-deploy.vercel.app>
-
-└─ HOST: docs
-   └─ FULL: docs.neoprotocol.space
-   └─ DEST: <smart-ui-delta.vercel.app>
-
-└─ HOST: mobile
-   └─ FULL: mobile.neoprotocol.space
-   └─ DEST: <miniapp-smartfactory.vercel.app>
+└─ HOST: factory-api
+   └─ FULL: factory-api.neoprotocol.space
+   └─ DEST: <smart-factory-production.up.railway.app>
 
 ────────────────────────────────────────
-Secondary Domain: <wodx.pro>
+Branding Domain: <nsfactory.xyz>
+(User-facing Hub)
+
+└─ HOST: @ (Root)
+   └─ FULL: nsfactory.xyz
+   └─ DEST: <landing-jet-seven.vercel.app>
+
+└─ HOST: app
+   └─ FULL: app.nsfactory.xyz
+   └─ DEST: <miniapp-smartfactory.vercel.app>
+
+└─ HOST: docs
+   └─ FULL: docs.nsfactory.xyz
+   └─ DEST: <smart-ui-delta.vercel.app>
+
+────────────────────────────────────────
+Domain: <wodx.pro>
+(Product/Game)
 
 └─ HOST: app
    └─ FULL: app.wodx.pro
@@ -64,10 +70,6 @@ Commercial Domain: <flowoff.xyz>
 └─ HOST: ia
    └─ FULL: ia.flowoff.xyz
    └─ DEST: <agent-neo-flowoff-production.up.railway.app>
-
-└─ HOST: www
-   └─ FULL: www.flowoff.xyz
-   └─ DEST: <cname.vercel-dns.com>
 
 ---
 
