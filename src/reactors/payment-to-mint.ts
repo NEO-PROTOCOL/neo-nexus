@@ -12,7 +12,7 @@ export function setup() {
     console.log('[REACTOR] 🔗 Setting up Payment → Mint reactor');
 
     Nexus.onEvent(ProtocolEvent.PAYMENT_RECEIVED, async (payload: PaymentPayload) => {
-        console.log(`[REACTOR] 💰 Payment received: ${payload.transactionId}`);
+        console.log(`[REACTOR] 💰 Payment confirmed for Order: ${payload.orderId}`);
         console.log(`[REACTOR] 💰 Amount: ${payload.amount} ${payload.currency}`);
         console.log(`[REACTOR] 💰 Payer: ${payload.payerId}`);
 
@@ -23,7 +23,7 @@ export function setup() {
                 tokenId: 'NEOFLW',
                 amount: payload.amount.toString(),
                 reason: 'purchase',
-                refTransactionId: payload.transactionId
+                refTransactionId: payload.orderId // Mapiado do orderId
             };
 
             // Check if Smart Factory API is configured

@@ -35,7 +35,7 @@ const validateFlowPaySignature = (req: Request, res: Response, next: any) => {
             console.error('[WEBHOOK] ❌ Invalid FlowPay signature');
             return res.status(401).json({ error: 'Invalid signature' });
         }
-    } catch (e) {
+    } catch {
         return res.status(401).json({ error: 'Auth failed' });
     }
 
@@ -70,6 +70,31 @@ router.post('/flowpay', validateFlowPaySignature, (req: Request, res: Response) 
     if (status === 'failed') {
         Nexus.dispatch(ProtocolEvent.PAYMENT_FAILED, { orderId, reason: metadata?.reason });
         return res.status(200).json({ status: 'processed', event: 'PAYMENT_FAILED' });
+    }
+
+    res.status(200).json({ status: 'ignored', reason: 'unhandled_status' });
+});
+
+/**
+ * Endpoint: POST /api/webhooks/factory
+ * Recebe confirmação de deploy/mint da Smart Factory
+ */
+router.post('/factory', validateFlowPaySignature, (req: Request, res: Response) => {
+    const { contractAddress, status, metadata } = req.body;
+
+    console.log(`[WEBHOOK] 🏗️ Factory notification: ${status} for ${contractAddress || 'new_contract'}`);
+
+    if (status === 'deployed' || status === 'confirmed') {
+        const payload = {
+            contractAddress,
+            txHash: metadata?.txHash,
+            timestamp: Date.now()
+        };
+
+        // Dispara MINT_CONFIRMED no Nexus
+        Nexus.dispatch(ProtocolEvent.MINT_CONFIRMED, payload);
+
+        return res.status(200).json({ status: 'processed', event: 'MINT_CONFIRMED' });
     }
 
     res.status(200).json({ status: 'ignored', reason: 'unhandled_status' });

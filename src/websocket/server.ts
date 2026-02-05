@@ -1,13 +1,8 @@
 import { WebSocketServer, WebSocket } from 'ws';
 import { Server, IncomingMessage } from 'http';
 import { URL } from 'url';
-import { createHmac, timingSafeEqual } from 'crypto';
+import { timingSafeEqual } from 'crypto';
 import { Nexus, ProtocolEvent } from '../core/nexus.js';
-
-interface SubscriptionMessage {
-    action: 'subscribe';
-    events: ProtocolEvent[];
-}
 
 interface WSClient extends WebSocket {
     isAlive: boolean;
@@ -56,7 +51,7 @@ function isAuthenticated(req: IncomingMessage): boolean {
 
         if (tokenBuf.length !== secretBuf.length) return false;
         return timingSafeEqual(tokenBuf, secretBuf);
-    } catch (e) {
+    } catch {
         return false;
     }
 }

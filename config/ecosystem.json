@@ -68,8 +68,8 @@
         "role": "Web3 Engineering",
         "hosting": {
             "platform": "Railway",
-            "productionUrl": "https://smart.neoprotocol.space",
-            "adminEmail": "factory@neoprotocol.space",
+            "productionUrl": "https://www.nsfactory.xyz/",
+            "adminEmail": "neo@neoprotocol.space",
             "targetCustomDomain": "factory.neoprotocol.space"
         }
     },
@@ -133,7 +133,7 @@
         "repository": "https://github.com/neo-smart-token-factory/smart-ui.git",
         "role": "Interface / PWA",
         "hosting": {
-            "platform": "N/A (Library / PWA)",
+            "platform": "https://www.nsfactory.xyz/miniapp",
             "adminEmail": "neo@neoprotocol.space"
         }
     },
@@ -147,7 +147,7 @@
         "role": "Landing Page / Traffic",
         "hosting": {
             "platform": "Vercel (nodevercel/smart-ui-landing)",
-            "productionUrl": "https://landing-jet-seven.vercel.app/",
+            "productionUrl": "https://landing-jet-seven.vercel.app/ , https://www.nsfactory.xyz/landing",
             "adminEmail": "neo@neoprotocol.space",
             "targetCustomDomain": "landing.neoprotocol.space"
         }

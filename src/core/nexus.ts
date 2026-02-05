@@ -38,11 +38,11 @@ export enum ProtocolEvent {
 // --- 2. Payload Types ---
 
 export interface PaymentPayload {
-    transactionId: string;
-    amount: number;
-    currency: "BRL" | "USDC" | "NEOFLW";
-    payerId: string; // MIO ID
-    metadata: Record<string, any>;
+    orderId: string;
+    amount: string | number;
+    currency: string;
+    payerId: string; // MIO ID ou Endereço
+    metadata?: Record<string, any>;
 }
 
 export interface MintPayload {
@@ -106,8 +106,8 @@ class ProtocolNexus extends EventEmitter {
     }
 
     private setupLogger() {
-        this.on("newListener", (event) => {
-            // console.log(`[NEXUS] Listener attached for: ${event}`);
+        this.on("newListener", (_event) => {
+            // console.log(`[NEXUS] Listener attached for: ${_event}`);
         });
     }
 
@@ -208,7 +208,7 @@ export function setupNexusReactors() {
             tokenId: "NEOFLW",
             amount: payload.amount.toString(),
             reason: "purchase",
-            refTransactionId: payload.transactionId
+            refTransactionId: payload.orderId
         };
 
         // Dispatch the Mint Request (Smart Factory Node would listen to this)
@@ -217,7 +217,7 @@ export function setupNexusReactors() {
 
     // REACTOR: Mint -> Notification
     // When Mint is confirmed on-chain, notify the user via FlowCloser.
-    Nexus.onEvent(ProtocolEvent.MINT_CONFIRMED, (payload: any) => {
+    Nexus.onEvent(ProtocolEvent.MINT_CONFIRMED, (_payload: any) => {
         console.log(`[REACTOR] ✅ Mint Confirmed! Triggering FlowCloser notification...`);
         // Here we would call the WhatsApp/Telegram sender
     });
