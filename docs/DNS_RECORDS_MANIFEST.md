@@ -34,8 +34,9 @@ Branding Domain: <nsfactory.xyz>
 (User-facing Hub)
 
 └─ HOST: @ (Root)
+   └─ TYPE: URL Redirect (301)
    └─ FULL: nsfactory.xyz
-   └─ DEST: <landing-jet-seven.vercel.app>
+   └─ DEST: <https://landing-jet-seven.vercel.app/>
 
 └─ HOST: app
    └─ FULL: app.nsfactory.xyz
