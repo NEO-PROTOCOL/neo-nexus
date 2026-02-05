@@ -87,8 +87,7 @@ Trabalho para os próximos dias.
 ────────────────────────────────────────
 └─ No FlowPay
    Configurar Webhook apontando para:
-   https://core.neoprotocol.space/
-   api/webhook/flowpay
+   https://nexus.neoprotocol.space/api/webhooks/flowpay
 
 └─ No Neobot (Nexus)
    Criar endpoint HTTP que recebe JSON,
@@ -109,8 +108,7 @@ Trabalho para os próximos dias.
 └─ No Neobot (Nexus)
    No Reactor PAYMENT_RECEIVED,
    implementar chamada:
-   fetch('https://smart.neoprotocol.space
-         /api/mint', ...)
+   fetch('https://factory.neoprotocol.space/api/mint', ...)
 ```
 
 ```text
@@ -118,8 +116,8 @@ Trabalho para os próximos dias.
 ────────────────────────────────────────
 └─ Na Smart Factory
    Ao terminar deploy, chamar:
-   POST /api/webhook/factory
-   (com endereço do contrato)
+   POST https://nexus.neoprotocol.space/api/webhooks/factory
+   (com assinatura HMAC)
 
 └─ No Neobot (Nexus)
    Disparar ProtocolEvent.MINT_CONFIRMED
