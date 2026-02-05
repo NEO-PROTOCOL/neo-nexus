@@ -11,16 +11,51 @@ import { setupWebSocketServer } from './websocket/server.js';
 dotenv.config();
 
 // Security Check in Production
-if (process.env.NODE_ENV === 'production' && !process.env.NEXUS_SECRET) {
-    console.error('❌ [FATAL] NEXUS_SECRET is required in production! Exiting...');
-    process.exit(1);
+if (process.env.NODE_ENV === 'production') {
+    const requiredEnvVars = ['NEXUS_SECRET', 'ALLOWED_ORIGINS'];
+    const missing = requiredEnvVars.filter(varName => !process.env[varName]);
+
+    if (missing.length > 0) {
+        console.error(`❌ [FATAL] Missing required environment variables in production: ${missing.join(', ')}`);
+        process.exit(1);
+    }
+
+    // Validate NEXUS_SECRET strength (minimum 32 chars)
+    if (process.env.NEXUS_SECRET && process.env.NEXUS_SECRET.length < 32) {
+        console.error('❌ [FATAL] NEXUS_SECRET must be at least 32 characters in production!');
+        process.exit(1);
+    }
+
+    console.log('✅ [SECURITY] Production environment validated');
 }
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Security Middleware
-app.use(helmet());
+// Security Middleware - Enhanced Helmet Configuration
+app.use(helmet({
+    contentSecurityPolicy: {
+        directives: {
+            defaultSrc: ["'self'"],
+            styleSrc: ["'self'", "'unsafe-inline'"],
+            scriptSrc: ["'self'"],
+            imgSrc: ["'self'", "data:", "https:"],
+        },
+    },
+    hsts: {
+        maxAge: 31536000,
+        includeSubDomains: true,
+        preload: true
+    },
+    frameguard: {
+        action: 'deny'
+    },
+    noSniff: true,
+    xssFilter: true,
+    referrerPolicy: {
+        policy: 'strict-origin-when-cross-origin'
+    }
+}));
 
 // Rate Limiting
 const limiter = rateLimit({
@@ -38,17 +73,33 @@ app.use(limiter);
 app.use(express.json({ limit: '100kb' })); // Limit body size
 
 // CORS - Restrict to known origins in production
-const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || ['*'];
+const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || [];
+
+// Warn if CORS is too permissive in production
+if (process.env.NODE_ENV === 'production' && allowedOrigins.length === 0) {
+    console.warn('[SECURITY] ⚠️  ALLOWED_ORIGINS not set in production! CORS will be restrictive by default.');
+}
+
 app.use((req, res, next) => {
     const origin = req.headers.origin;
-    if (allowedOrigins.includes('*') || (origin && allowedOrigins.includes(origin))) {
-        res.setHeader('Access-Control-Allow-Origin', origin || '*');
+
+    // In production, only allow explicitly listed origins
+    // In development, allow localhost if no origins configured
+    const isDevelopment = process.env.NODE_ENV === 'development';
+    const isOriginAllowed = origin && (
+        allowedOrigins.includes(origin) ||
+        (isDevelopment && allowedOrigins.length === 0)
+    );
+
+    if (isOriginAllowed) {
+        res.setHeader('Access-Control-Allow-Origin', origin);
         res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
         res.setHeader('Access-Control-Allow-Headers', 'Content-Type, X-Nexus-Signature');
+        res.setHeader('Access-Control-Allow-Credentials', 'true');
     }
 
     if (req.method === 'OPTIONS') {
-        res.sendStatus(204);
+        res.sendStatus(isOriginAllowed ? 204 : 403);
         return;
     }
 

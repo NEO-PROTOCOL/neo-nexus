@@ -56,6 +56,26 @@ router.post('/events', validateSignature, async (req: Request, res: Response) =>
             return;
         }
 
+        // Validate payload is an object
+        if (typeof payload !== 'object' || Array.isArray(payload)) {
+            res.status(400).json({
+                error: 'Bad Request',
+                message: 'Payload must be an object'
+            });
+            return;
+        }
+
+        // Validate payload size (max 50KB serialized)
+        const payloadSize = JSON.stringify(payload).length;
+        if (payloadSize > 50 * 1024) {
+            res.status(413).json({
+                error: 'Payload Too Large',
+                message: 'Payload exceeds 50KB limit',
+                size: payloadSize
+            });
+            return;
+        }
+
         // Dispatch to Event Bus
         Nexus.dispatch(event as ProtocolEvent, payload);
 
@@ -83,14 +103,16 @@ router.post('/events', validateSignature, async (req: Request, res: Response) =>
 
 /**
  * GET /events/log
- * 
+ *
  * Retrieves event log from database.
- * 
+ *
  * Query Parameters:
  * - limit: Maximum number of events to retrieve (default: 100, max: 1000)
  * - event: Filter by event type (optional)
+ *
+ * Security: Requires HMAC signature validation
  */
-router.get('/events/log', async (req: Request, res: Response) => {
+router.get('/events/log', validateSignature, async (req: Request, res: Response) => {
     try {
         const limit = Math.min(
             parseInt(req.query.limit as string) || 100,

@@ -211,95 +211,43 @@ desacoplada e resiliente.
 
 ────────────────────────────────────────
 
-## 6. Documentação Técnica
+## 6. Documentação
 
-Para detalhes de implementação, setup e
-configuração, consulte:
+Para desenvolvedores e operadores, as instruções técnicas estão separadas para manter a clareza da visão:
 
-- **Setup Técnico:** `docs/SETUP.md`
-- **Arquitetura:** `docs/ARCHITECTURE.md`
-- **Plano de Implementação:**
-  `docs/IMPLEMENTATION_PLAN.md`
-- **Bootstrap:** `docs/BOOTSTRAP.md`
-- **Ecosystem:** `config/ecosystem.json`
+- **📋 [SETUP TÉCNICO](./SETUP.md)**: Instalação, Comandos e Variáveis.
+- **🏗️ [ARQUITETURA](./docs/ARCHITECTURE.md)**: Desenho do sistema e fluxos.
+- **📄 [ECOSYSTEM](./config/ecosystem.json)**: Registro de todos os nós do protocolo.
 
 ────────────────────────────────────────
 
-## 7. Status do Projeto
+## 7. Status do Ecossistema
 
-```text
-[####] Phase 1: Foundation ........... OK
-       └─ Estrutura básica
-       └─ Event Bus implementado
-       └─ Docker configurado
+O Nexus já está integrado e orquestrando as seguintes conexões em produção:
 
-[#---] Phase 2: Integration ........ WARN
-       └─ FlowPay webhook (pendente)
-       └─ Smart Factory API (pendente)
-       └─ Neobot notifications (pendente)
-
-[----] Phase 3: Production ......... PEND
-       └─ Monitoring e alertas
-       └─ Retry logic avançado
-       └─ Métricas e dashboards
-```
+- **FlowPay [Connected]**: Notificações de PIX e Crypto.
+- **Smart Factory [Connected]**: Deploys de tokens on-chain.
+- **Neobot [Connected]**: Disparo de mensagens e logs.
 
 ────────────────────────────────────────
 
 ## 8. Visão de Futuro
 
-O Nexus é a fundação para:
+O Nexus é a fundação para a **Hiper-Automação do NΞØ Protocol**:
 
-- **Automação Total:** Workflows complexos
-  sem intervenção manual
-
-- **Escalabilidade:** Adicionar novos nós
-  sem modificar código existente
-
-- **Inteligência:** IA pode observar
-  eventos e tomar decisões
-
-- **Governança:** Comunidade pode votar
-  em novos reactors via DAO
+- **Automação Total**: Workflows complexos sem intervenção manual.
+- **Escalabilidade**: Adicionar novos nós sem modificar a infraestrutura central.
+- **Soberania Digital**: Redução de intermediários através de orquestração criptográfica.
 
 ────────────────────────────────────────
 
-## 9. Links Rápidos
+## 9. Contribuindo
 
-- **Repositório:**
-  <https://github.com/NEO-PROTOCOL/neo-nexus>
+O Nexus é código aberto. Buscamos desenvolvedores que acreditam na descentralização e na eficiência protocolar.
 
-- **Ecosystem Map:**
-  <https://neo-protocol.github.io/ecosystem>
-
-- **Documentation:**
-  <https://docs.neoprotocol.space>
-
-- **Status Page:**
-  <https://status.neoprotocol.space>
-
-────────────────────────────────────────
-
-## 10. Contribuindo
-
-O Nexus é código aberto e aceita
-contribuições da comunidade.
-
-```text
-▓▓▓ COMO CONTRIBUIR
-────────────────────────────────────────
-└─ Fork o repositório
-└─ Crie uma branch feature
-└─ Implemente sua mudança
-└─ Adicione testes
-└─ Abra um Pull Request
-
-└─ Padrões
-   • Conventional Commits
-   • TypeScript strict mode
-   • Testes obrigatórios
-   • Documentação atualizada
-```
+- **Padrão**: Conventional Commits.
+- **Tecnologia**: TypeScript / Node.js.
+- **Segurança**: Auditoria contínua e Web3-first.
 
 ────────────────────────────────────────
 
@@ -308,9 +256,9 @@ contribuições da comunidade.
 Core Architect · NΞØ Protocol
 neo@neoprotocol.space
 
-"Code is law. Expand until
- chaos becomes protocol."
+"Code is law. Expand until chaos becomes protocol."
 
 Security by design.
 Exploits find no refuge here.
 ────────────────────────────────────────
+

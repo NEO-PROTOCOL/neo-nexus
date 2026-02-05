@@ -8,6 +8,8 @@ interface WSClient extends WebSocket {
     isAlive: boolean;
     subscriptions: Set<ProtocolEvent>;
     clientId: string;
+    messageCount: number;
+    lastMessageTime: number;
 }
 
 /**
@@ -82,6 +84,8 @@ export function setupWebSocketServer(server: Server) {
         ws.isAlive = true;
         ws.subscriptions = new Set();
         ws.clientId = req.socket.remoteAddress || 'unknown';
+        ws.messageCount = 0;
+        ws.lastMessageTime = Date.now();
 
         console.log(`[WEBSOCKET] 🔐 Authenticated client connected from ${ws.clientId}`);
 
@@ -92,19 +96,84 @@ export function setupWebSocketServer(server: Server) {
 
         ws.on('message', (data) => {
             try {
-                const message = JSON.parse(data.toString());
+                // Rate limiting: max 10 messages per second
+                const now = Date.now();
+                if (now - ws.lastMessageTime < 1000) {
+                    ws.messageCount++;
+                    if (ws.messageCount > 10) {
+                        console.warn(`[WEBSOCKET] Rate limit exceeded for ${ws.clientId}`);
+                        ws.send(JSON.stringify({
+                            error: 'Rate limit exceeded',
+                            message: 'Too many messages per second'
+                        }));
+                        return;
+                    }
+                } else {
+                    ws.messageCount = 1;
+                    ws.lastMessageTime = now;
+                }
 
-                if (message.action === 'subscribe' && Array.isArray(message.events)) {
+                // Convert data to string for size check
+                const dataStr = data.toString();
+
+                // Validate message size (max 10KB)
+                if (dataStr.length > 10 * 1024) {
+                    ws.send(JSON.stringify({
+                        error: 'Message too large',
+                        message: 'Maximum message size is 10KB'
+                    }));
+                    return;
+                }
+
+                const message = JSON.parse(dataStr);
+
+                // Validate message structure
+                if (!message || typeof message !== 'object') {
+                    ws.send(JSON.stringify({ error: 'Invalid message format' }));
+                    return;
+                }
+
+                if (message.action === 'subscribe') {
+                    if (!Array.isArray(message.events)) {
+                        ws.send(JSON.stringify({
+                            error: 'Invalid subscribe format',
+                            message: 'events must be an array'
+                        }));
+                        return;
+                    }
+
+                    // Limit subscriptions to 20 events per client
+                    if (message.events.length > 20) {
+                        ws.send(JSON.stringify({
+                            error: 'Too many subscriptions',
+                            message: 'Maximum 20 event subscriptions allowed'
+                        }));
+                        return;
+                    }
+
+                    const validEvents: ProtocolEvent[] = [];
+                    const invalidEvents: string[] = [];
+
                     message.events.forEach((event: string) => {
-                        if (Object.values(ProtocolEvent).includes(event as ProtocolEvent)) {
+                        if (typeof event === 'string' && Object.values(ProtocolEvent).includes(event as ProtocolEvent)) {
                             ws.subscriptions.add(event as ProtocolEvent);
+                            validEvents.push(event as ProtocolEvent);
                             console.log(`[WEBSOCKET] Client ${ws.clientId} subscribed to ${event}`);
+                        } else {
+                            invalidEvents.push(event);
                         }
                     });
 
                     ws.send(JSON.stringify({
                         status: 'subscribed',
-                        events: Array.from(ws.subscriptions)
+                        events: Array.from(ws.subscriptions),
+                        validEvents,
+                        invalidEvents: invalidEvents.length > 0 ? invalidEvents : undefined
+                    }));
+                } else {
+                    ws.send(JSON.stringify({
+                        error: 'Unknown action',
+                        message: `Action "${message.action}" is not supported`
                     }));
                 }
             } catch (error) {

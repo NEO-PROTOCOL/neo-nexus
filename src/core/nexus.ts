@@ -3,6 +3,7 @@ import EventEmitter from "events";
 import Database from "better-sqlite3";
 import { existsSync, mkdirSync } from "fs";
 import { join } from "path";
+import { sanitizeForLog } from "../utils/sanitize.js";
 
 /**
  * ============================================================================
@@ -117,7 +118,8 @@ class ProtocolNexus extends EventEmitter {
      * @param payload Data associated with the event
      */
     public dispatch(event: ProtocolEvent, payload: any) {
-        console.log(`[NEXUS] ⚡ Dispatching ${event}`, JSON.stringify(payload, null, 0));
+        const sanitizedPayload = sanitizeForLog(payload);
+        console.log(`[NEXUS] ⚡ Dispatching ${event}`, JSON.stringify(sanitizedPayload, null, 0));
         this.emit(event, payload);
     }
 
@@ -139,20 +141,36 @@ class ProtocolNexus extends EventEmitter {
         payload: any,
         source?: string
     ): Promise<number> {
-        const stmt = this.db.prepare(`
-            INSERT INTO events (event, payload, source, timestamp)
-            VALUES (?, ?, ?, ?)
-        `);
+        return new Promise((resolve, reject) => {
+            try {
+                const stmt = this.db.prepare(`
+                    INSERT INTO events (event, payload, source, timestamp)
+                    VALUES (?, ?, ?, ?)
+                `);
 
-        const result = stmt.run(
-            event,
-            JSON.stringify(payload),
-            source || 'internal',
-            Date.now()
-        );
+                // Sanitize payload for storage (limit size)
+                const payloadStr = JSON.stringify(payload);
+                if (payloadStr.length > 100 * 1024) {
+                    console.warn(`[NEXUS] ⚠️  Large payload detected (${payloadStr.length} bytes), truncating...`);
+                    const truncated = { ...payload, _truncated: true, _originalSize: payloadStr.length };
+                    resolve(this.persistEvent(event, truncated, source));
+                    return;
+                }
 
-        console.log(`[NEXUS] 💾 Event persisted: ${event} (id: ${result.lastInsertRowid})`);
-        return result.lastInsertRowid as number;
+                const result = stmt.run(
+                    event,
+                    payloadStr,
+                    source || 'internal',
+                    Date.now()
+                );
+
+                console.log(`[NEXUS] 💾 Event persisted: ${event} (id: ${result.lastInsertRowid})`);
+                resolve(result.lastInsertRowid as number);
+            } catch (error) {
+                console.error('[NEXUS] ❌ Error persisting event:', error);
+                reject(error);
+            }
+        });
     }
 
     /**

@@ -39,9 +39,30 @@ export function validateSignature(
     const signature = req.headers['x-nexus-signature'] as string;
 
     if (!signature) {
+        console.warn(`[AUTH] ❌ Missing signature from ${req.ip} for ${req.path}`);
         res.status(401).json({
             error: 'Unauthorized',
             message: 'Missing X-Nexus-Signature header'
+        });
+        return;
+    }
+
+    // Validate signature format (hex string)
+    if (!/^[0-9a-fA-F]+$/.test(signature)) {
+        console.warn(`[AUTH] ❌ Invalid signature format from ${req.ip}`);
+        res.status(401).json({
+            error: 'Unauthorized',
+            message: 'Invalid signature format'
+        });
+        return;
+    }
+
+    // Validate signature length (SHA256 = 64 chars in hex)
+    if (signature.length !== 64) {
+        console.warn(`[AUTH] ❌ Invalid signature length from ${req.ip}`);
+        res.status(401).json({
+            error: 'Unauthorized',
+            message: 'Invalid signature'
         });
         return;
     }

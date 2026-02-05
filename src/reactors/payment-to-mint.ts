@@ -37,24 +37,66 @@ export function setup() {
                 return;
             }
 
-            // Call Smart Factory API
+            // Call Smart Factory API with timeout
             console.log(`[REACTOR] 📡 Calling Smart Factory: ${factoryUrl}/api/mint`);
 
-            const response = await fetch(`${factoryUrl}/api/mint`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${factoryKey}`,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(mintRequest)
-            });
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 30000); // 30s timeout
 
-            if (!response.ok) {
-                const errorText = await response.text();
-                console.error('[REACTOR] ❌ Smart Factory API error:', errorText);
+            let response;
+            try {
+                response = await fetch(`${factoryUrl}/api/mint`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${factoryKey}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(mintRequest),
+                    signal: controller.signal
+                });
+
+                clearTimeout(timeoutId);
+
+                if (!response.ok) {
+                    const errorText = await response.text();
+                    console.error('[REACTOR] ❌ Smart Factory API error:', response.status, errorText);
+
+                    // Persist error event for monitoring
+                    await Nexus.persistEvent(
+                        ProtocolEvent.MINT_REQUESTED,
+                        {
+                            ...mintRequest,
+                            error: {
+                                status: response.status,
+                                message: errorText.substring(0, 500) // Limit error message size
+                            }
+                        },
+                        'reactor:payment-to-mint:error'
+                    );
+
+                    // TODO: Add to retry queue
+                    return;
+                }
+            } catch (fetchError: any) {
+                clearTimeout(timeoutId);
+
+                if (fetchError.name === 'AbortError') {
+                    console.error('[REACTOR] ❌ Smart Factory API timeout');
+                    await Nexus.persistEvent(
+                        ProtocolEvent.MINT_REQUESTED,
+                        { ...mintRequest, error: { message: 'Request timeout' } },
+                        'reactor:payment-to-mint:timeout'
+                    );
+                } else {
+                    console.error('[REACTOR] ❌ Smart Factory API network error:', fetchError.message);
+                    await Nexus.persistEvent(
+                        ProtocolEvent.MINT_REQUESTED,
+                        { ...mintRequest, error: { message: fetchError.message } },
+                        'reactor:payment-to-mint:network-error'
+                    );
+                }
 
                 // TODO: Add to retry queue
-                // For now, just log and continue
                 return;
             }
 

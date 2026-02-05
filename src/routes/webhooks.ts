@@ -49,6 +49,31 @@ const validateFlowPaySignature = (req: Request, res: Response, next: any) => {
 router.post('/flowpay', validateFlowPaySignature, (req: Request, res: Response) => {
     const { orderId, amount, currency, payerId, status, metadata } = req.body;
 
+    // Validate required fields
+    if (!orderId || !amount || !currency || !payerId || !status) {
+        return res.status(400).json({
+            error: 'Bad Request',
+            message: 'Missing required fields: orderId, amount, currency, payerId, status'
+        });
+    }
+
+    // Validate field types and formats
+    if (typeof orderId !== 'string' || orderId.length < 1 || orderId.length > 100) {
+        return res.status(400).json({ error: 'Invalid orderId format' });
+    }
+
+    if (typeof payerId !== 'string' || payerId.length < 1 || payerId.length > 100) {
+        return res.status(400).json({ error: 'Invalid payerId format' });
+    }
+
+    if (typeof currency !== 'string' || !/^[A-Z]{3}$/.test(currency)) {
+        return res.status(400).json({ error: 'Invalid currency format (expected ISO 4217)' });
+    }
+
+    if (typeof status !== 'string' || !['confirmed', 'completed', 'failed', 'pending'].includes(status)) {
+        return res.status(400).json({ error: 'Invalid status value' });
+    }
+
     console.log(`[WEBHOOK] 💰 FlowPay notification for Order ${orderId}: ${status}`);
 
     if (status === 'confirmed' || status === 'completed') {
@@ -81,6 +106,23 @@ router.post('/flowpay', validateFlowPaySignature, (req: Request, res: Response) 
  */
 router.post('/factory', validateFlowPaySignature, (req: Request, res: Response) => {
     const { contractAddress, status, metadata } = req.body;
+
+    // Validate required fields
+    if (!status) {
+        return res.status(400).json({
+            error: 'Bad Request',
+            message: 'Missing required field: status'
+        });
+    }
+
+    if (typeof status !== 'string' || !['deployed', 'confirmed', 'failed', 'pending'].includes(status)) {
+        return res.status(400).json({ error: 'Invalid status value' });
+    }
+
+    // Validate contract address format if provided (Ethereum-like address)
+    if (contractAddress && (typeof contractAddress !== 'string' || !/^0x[a-fA-F0-9]{40}$/.test(contractAddress))) {
+        return res.status(400).json({ error: 'Invalid contractAddress format' });
+    }
 
     console.log(`[WEBHOOK] 🏗️ Factory notification: ${status} for ${contractAddress || 'new_contract'}`);
 
