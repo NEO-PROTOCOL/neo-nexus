@@ -24,13 +24,17 @@ and Phase 2 initiation.
 ▓▓▓ 2. PRODUCTION HARDENING
 ────────────────────────────────────────
 [#---] Production Health Check ........ WARN
-[#---] Node Secret Sync ............... WARN
+[####] Node Secret Sync ............... OK
+   > NOTE: On Nexus Server (Railway), use
+   > env var: "NEXUS_SECRET".
+   > On Clients (Neobot/FlowPay), use
+   > env var: "NEXUS_AUTH_TOKEN".
 
 └─ Task: Test <https://nexus.neoprotocol.space/health>
    after Railway deploy.
-└─ Task: Update .env in FlowPay, Neobot,
-   and Smart Factory with the new
-   Production URLs.
+└─ Task: Configure Cloudflare SSL for
+   neoprotocol.space to fix DNS
+   propagation delays.
 
 ---
 
