@@ -3,78 +3,71 @@
        NΞØ DNS RECORDS MANIFEST
 ========================================
 
-Authoritative source for all DNS configs
-across Spaceship and GoDaddy.
+Authoritative source for DNS configuration.
+Format: [Subdomain] -> [Target URL]
 
 ---
 
 ▓▓▓ REGISTRY: SPACESHIP.COM
 ────────────────────────────────────────
-Domain: <neoprotocol.space>
-(Infrastructure & Identity)
+Primary Domain: <neoprotocol.space>
 
-└─ Sub: nexus (Orchestrator)
-   └─ Type: CNAME
-   └─ Dest: <neo-nexus-production.up.railway.app>
+└─ HOST: nexus
+   └─ FULL: nexus.neoprotocol.space
+   └─ DEST: <neo-nexus-production.up.railway.app>
 
-└─ Sub: core (FlowCloser Agent)
-   └─ Type: CNAME
-   └─ Dest: <flowcloser-agent-production.up.railway.app>
+└─ HOST: core
+   └─ FULL: core.neoprotocol.space
+   └─ DEST: <flowcloser-agent-production.up.railway.app>
 
-└─ Sub: factory (Hub)
-   └─ Type: CNAME
-   └─ Dest: <smart-factory-production.up.railway.app>
+└─ HOST: factory
+   └─ FULL: factory.neoprotocol.space
+   └─ DEST: <smart-factory-production.up.railway.app>
 
-└─ Sub: id (Identity)
-   └─ Type: CNAME
-   └─ Dest: <mio-system-production.up.railway.app>
+└─ HOST: id
+   └─ FULL: id.neoprotocol.space
+   └─ DEST: <mio-system-production.up.railway.app>
 
-└─ Sub: dashboard (UI)
-   └─ Type: CNAME
-   └─ Dest: <neo-dashboard-deploy.vercel.app>
+└─ HOST: dashboard
+   └─ FULL: dashboard.neoprotocol.space
+   └─ DEST: <neo-dashboard-deploy.vercel.app>
 
-└─ Sub: docs (Guide)
-   └─ Type: CNAME
-   └─ Dest: <smart-ui-delta.vercel.app>
+└─ HOST: docs
+   └─ FULL: docs.neoprotocol.space
+   └─ DEST: <smart-ui-delta.vercel.app>
 
-└─ Sub: mobile (MiniApp)
-   └─ Type: CNAME
-   └─ Dest: <miniapp-smartfactory.vercel.app>
+└─ HOST: mobile
+   └─ FULL: mobile.neoprotocol.space
+   └─ DEST: <miniapp-smartfactory.vercel.app>
 
 ────────────────────────────────────────
-Domain: <wodx.pro>
-(Product/Game)
+Secondary Domain: <wodx.pro>
 
-└─ Sub: app (Frontend)
-   └─ Type: CNAME
-   └─ Dest: <wod-x-pro.vercel.app>
+└─ HOST: app
+   └─ FULL: app.wodx.pro
+   └─ DEST: <wod-x-pro.vercel.app>
 
-└─ Sub: api (Backend)
-   └─ Type: CNAME
-   └─ Dest: <wod-eth-production.up.railway.app>
-
-└─ Sub: protocol (Docs)
-   └─ Type: CNAME
-   └─ Dest: <wod-protocol.vercel.app>
+└─ HOST: api
+   └─ FULL: api.wodx.pro
+   └─ DEST: <wod-eth-production.up.railway.app>
 
 ---
 
 ▓▓▓ REGISTRY: GODADDY
 ────────────────────────────────────────
-Domain: <flowoff.xyz>
-(Commercial/Agency)
+Commercial Domain: <flowoff.xyz>
 
-└─ Sub: pay (Gateway)
-   └─ Type: CNAME
-   └─ Dest: <flowpay-production-10d8.up.railway.app>
+└─ HOST: pay
+   └─ FULL: pay.flowoff.xyz
+   └─ DEST: <flowpay-production-10d8.up.railway.app>
 
-└─ Sub: ia (Agent)
-   └─ Type: CNAME
-   └─ Dest: <agent-neo-flowoff-production.up.railway.app>
+└─ HOST: ia
+   └─ FULL: ia.flowoff.xyz
+   └─ DEST: <agent-neo-flowoff-production.up.railway.app>
 
-└─ Sub: www (Landing)
-   └─ Type: CNAME
-   └─ Dest: <cname.vercel-dns.com>
+└─ HOST: www
+   └─ FULL: www.flowoff.xyz
+   └─ DEST: <cname.vercel-dns.com>
 
 ---
 
