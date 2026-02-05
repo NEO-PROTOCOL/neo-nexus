@@ -4,6 +4,7 @@ import { createServer } from 'http';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import eventsRouter from './routes/events.js';
+import webhooksRouter from './routes/webhooks.js';
 import { loadReactors } from './reactors/index.js';
 import { setupWebSocketServer } from './websocket/server.js';
 
@@ -65,6 +66,7 @@ app.get('/health', (req, res) => {
 
 // Event routes
 app.use('/api', eventsRouter);
+app.use('/api/webhooks', webhooksRouter);
 
 // Error handling middleware
 app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
