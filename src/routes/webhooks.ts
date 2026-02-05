@@ -8,8 +8,9 @@ const router = Router();
  * Middleware para validar assinaturas específicas do FlowPay
  */
 const validateFlowPaySignature = (req: Request, res: Response, next: any) => {
-    const signature = req.headers['x-flowpay-signature'] as string;
-    const secret = process.env.FLOWPAY_WEBHOOK_SECRET;
+    // Ajustado para ser compatível com o header enviado pelo agente FlowPay
+    const signature = (req.headers['x-nexus-signature'] || req.headers['x-flowpay-signature']) as string;
+    const secret = process.env.NEXUS_SECRET; // Usando a chave mestra para facilitação na Phase 1
 
     if (!secret) {
         console.warn('[WEBHOOK] ⚠️ FLOWPAY_WEBHOOK_SECRET not set. Skipping validation (UNSAFE).');
