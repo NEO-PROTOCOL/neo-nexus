@@ -88,10 +88,10 @@ const server = createServer(app);
 setupWebSocketServer(server);
 
 // Start server
-server.listen(PORT, () => {
+server.listen(Number(PORT), '0.0.0.0', () => {
     console.log(`[NEXUS] 🚀 Server running on port ${PORT}`);
-    console.log(`[NEXUS] 🔗 Event ingress: http://localhost:${PORT}/api/events`);
-    console.log(`[NEXUS] 📊 Event log: http://localhost:${PORT}/api/events/log`);
-    console.log(`[NEXUS] 🔌 WebSocket: ws://localhost:${PORT}`);
-    console.log(`[NEXUS] ❤️  Health check: http://localhost:${PORT}/health`);
+    console.log(`[NEXUS] 🔗 Event ingress: http://0.0.0.0:${PORT}/api/events`);
+    console.log(`[NEXUS] 📊 Event log: http://0.0.0.0:${PORT}/api/events/log`);
+    console.log(`[NEXUS] 🔌 WebSocket: ws://0.0.0.0:${PORT}`);
+    console.log(`[NEXUS] ❤️  Health check: http://0.0.0.0:${PORT}/health`);
 });
