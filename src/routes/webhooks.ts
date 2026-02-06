@@ -128,8 +128,11 @@ router.post('/factory', validateFlowPaySignature, (req: Request, res: Response) 
 
     if (status === 'deployed' || status === 'confirmed') {
         const payload = {
+            orderId: metadata?.orderId, // Crucial for FlowPay correlation
             contractAddress,
             txHash: metadata?.txHash,
+            recipient: metadata?.recipient,
+            amount: metadata?.amount,
             timestamp: Date.now()
         };
 
@@ -137,6 +140,15 @@ router.post('/factory', validateFlowPaySignature, (req: Request, res: Response) 
         Nexus.dispatch(ProtocolEvent.MINT_CONFIRMED, payload);
 
         return res.status(200).json({ status: 'processed', event: 'MINT_CONFIRMED' });
+    }
+
+    if (status === 'failed') {
+        Nexus.dispatch(ProtocolEvent.MINT_FAILED, {
+            orderId: metadata?.orderId,
+            error: metadata?.error || 'Unknown factory error',
+            contractAddress
+        });
+        return res.status(200).json({ status: 'processed', event: 'MINT_FAILED' });
     }
 
     res.status(200).json({ status: 'ignored', reason: 'unhandled_status' });

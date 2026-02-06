@@ -1,4 +1,5 @@
 import { Nexus, ProtocolEvent, PaymentPayload, MintPayload } from '../core/nexus.js';
+import { Discovery } from '../core/discovery.js';
 
 /**
  * ============================================================================
@@ -13,39 +14,38 @@ export function setup() {
 
     Nexus.onEvent(ProtocolEvent.PAYMENT_RECEIVED, async (payload: PaymentPayload) => {
         console.log(`[REACTOR] 💰 Payment confirmed for Order: ${payload.orderId}`);
-        console.log(`[REACTOR] 💰 Amount: ${payload.amount} ${payload.currency}`);
-        console.log(`[REACTOR] 💰 Payer: ${payload.payerId}`);
 
         try {
+            // Resolve Smart Factory URL dynamically
+            const factoryUrl = await Discovery.resolveUrl('smart-core');
+            const factoryKey = process.env.FACTORY_API_KEY;
+
             // Prepare mint request
             const mintRequest: MintPayload = {
                 targetAddress: payload.payerId,
                 tokenId: 'NEOFLW',
                 amount: payload.amount.toString(),
                 reason: 'purchase',
-                refTransactionId: payload.orderId // Mapiado do orderId
+                refTransactionId: payload.orderId
             };
 
-            // Check if Smart Factory API is configured
-            const factoryUrl = process.env.FACTORY_API_URL;
-            const factoryKey = process.env.FACTORY_API_KEY;
-
             if (!factoryUrl || !factoryKey) {
-                console.warn('[REACTOR] ⚠️  Smart Factory not configured. Dispatching MINT_REQUESTED event only.');
+                console.warn('[REACTOR] ⚠️  Smart Factory not configured (Discovery failed or missing Key). Dispatching MINT_REQUESTED event only.');
                 Nexus.dispatch(ProtocolEvent.MINT_REQUESTED, mintRequest);
                 await Nexus.persistEvent(ProtocolEvent.MINT_REQUESTED, mintRequest, 'reactor:payment-to-mint');
                 return;
             }
 
             // Call Smart Factory API with timeout
-            console.log(`[REACTOR] 📡 Calling Smart Factory: ${factoryUrl}/api/mint`);
+            const targetEndpoint = `${factoryUrl.replace(/\/$/, '')}/api/mint`;
+            console.log(`[REACTOR] 📡 Calling Smart Factory: ${targetEndpoint}`);
 
             const controller = new AbortController();
             const timeoutId = setTimeout(() => controller.abort(), 30000); // 30s timeout
 
             let response;
             try {
-                response = await fetch(`${factoryUrl}/api/mint`, {
+                response = await fetch(targetEndpoint, {
                     method: 'POST',
                     headers: {
                         'Authorization': `Bearer ${factoryKey}`,

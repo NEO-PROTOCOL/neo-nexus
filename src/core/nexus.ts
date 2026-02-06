@@ -23,6 +23,7 @@ export enum ProtocolEvent {
     // Smart Factory Events
     MINT_REQUESTED = "FACTORY:MINT_REQUESTED",
     MINT_CONFIRMED = "FACTORY:MINT_CONFIRMED", // On-Chain Success
+    MINT_FAILED = "FACTORY:MINT_FAILED",       // On-Chain Failure
     CONTRACT_DEPLOYED = "FACTORY:CONTRACT_DEPLOYED",
 
     // Fluxx Governance Events
