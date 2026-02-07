@@ -1,9 +1,9 @@
 [
     {
-        "id": "flowcloser-agent",
+        "id": "neo-agent-full",
         "org": "NEO Protocol",
-        "name": "FlowCloser Agent (Neobot Core)",
-        "description": "Agente de Qualificação e Vendas (CRM Nativo). Orquestrador Interplanetário.",
+        "name": "NΞØ Sovereign Cloud Engine",
+        "description": "Sovereign AI Agent - Core Orchestrator (GCloud Edition).",
         "localPath": ".",
         "repository": "https://github.com/NEO-PROTOCOL/neo-node-interplanetary.git",
         "role": "Agent Node / Orchestrator",
@@ -12,7 +12,7 @@
             "productionUrl": "https://flowcloser-agent-production.up.railway.app",
             "projectLink": "https://railway.com/project/95ed3bcd-2e20-4477-b50c-43cd9ec04c41",
             "adminEmail": "neo@neoprotocol.space",
-            "targetCustomDomain": "core.neoprotocol.space"
+            "targetCustomDomain": "ia.neoprotocol.space"
         }
     },
     {

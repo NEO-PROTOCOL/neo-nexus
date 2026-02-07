@@ -29,10 +29,6 @@ Primary Domain: <neoprotocol.space>
    └─ FULL: factory-api.neoprotocol.space
    └─ DEST: <smart-factory-production.up.railway.app>
 
-└─ HOST: sales
-   └─ FULL: sales.neoprotocol.space
-   └─ DEST: <neo-closer-production.up.railway.app>
-
 ────────────────────────────────────────
 Branding Domain: <nsfactory.xyz>
 (User-facing Hub)
