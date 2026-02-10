@@ -215,9 +215,15 @@ desacoplada e resiliente.
 
 Para desenvolvedores e operadores, as instruções técnicas estão separadas para manter a clareza da visão:
 
+### **Documentação Essencial**
 - **📋 [SETUP TÉCNICO](./SETUP.md)**: Instalação, Comandos e Variáveis.
 - **🏗️ [ARQUITETURA](./docs/ARCHITECTURE.md)**: Desenho do sistema e fluxos.
 - **📄 [ECOSYSTEM](./config/ecosystem.json)**: Registro de todos os nós do protocolo.
+
+### **Documentação de Desenvolvimento**
+- **🔄 [COMPATIBILIDADE NEOBOT](./docs/NEOBOT_COMPATIBILITY.md)**: Guia de compatibilidade com o protótipo Neobot.
+- **📝 [TODO LIST](./TODO_LIST.md)**: Pendências, melhorias e roadmap técnico.
+- **🔐 [SECURITY RECOMMENDATIONS](./SECURITY_RECOMMENDATIONS.md)**: Recomendações de segurança.
 
 ────────────────────────────────────────
 
