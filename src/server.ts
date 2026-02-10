@@ -5,8 +5,12 @@ import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import eventsRouter from './routes/events.js';
 import webhooksRouter from './routes/webhooks.js';
+import retryRouter from './routes/retry.js';
+import metricsRouter from './routes/metrics.js';
+import healthRouter from './routes/health.js';
 import { loadReactors } from './reactors/index.js';
 import { setupWebSocketServer } from './websocket/server.js';
+import { retryQueue } from './utils/retry-queue.js';
 
 dotenv.config();
 
@@ -106,18 +110,16 @@ app.use((req, res, next) => {
     next();
 });
 
-// Health check
-app.get('/health', (req, res) => {
-    res.json({
-        status: 'ok',
-        uptime: process.uptime(),
-        timestamp: Date.now()
-    });
-});
+// Health routes
+app.use('/health', healthRouter);
 
 // Event routes
 app.use('/api', eventsRouter);
 app.use('/api/webhooks', webhooksRouter);
+app.use('/api/retry', retryRouter);
+
+// Metrics endpoint (Prometheus compatible)
+app.use('/metrics', metricsRouter);
 
 // Error handling middleware
 app.use((err: Error, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
@@ -143,6 +145,29 @@ server.listen(Number(PORT), '0.0.0.0', () => {
     console.log(`[NEXUS] 🚀 Server running on port ${PORT}`);
     console.log(`[NEXUS] 🔗 Event ingress: http://0.0.0.0:${PORT}/api/events`);
     console.log(`[NEXUS] 📊 Event log: http://0.0.0.0:${PORT}/api/events/log`);
+    console.log(`[NEXUS] 🔄 Retry stats: http://0.0.0.0:${PORT}/api/retry/stats`);
+    console.log(`[NEXUS] 💀 Dead letters: http://0.0.0.0:${PORT}/api/retry/dead-letters`);
     console.log(`[NEXUS] 🔌 WebSocket: ws://0.0.0.0:${PORT}`);
-    console.log(`[NEXUS] ❤️  Health check: http://0.0.0.0:${PORT}/health`);
+    console.log(`[NEXUS] ❤️  Health: http://0.0.0.0:${PORT}/health`);
+    console.log(`[NEXUS] 🏥 Health (detailed): http://0.0.0.0:${PORT}/health/detailed`);
+    console.log(`[NEXUS] 📈 Metrics (Prometheus): http://0.0.0.0:${PORT}/metrics`);
+});
+
+// Graceful shutdown
+process.on('SIGTERM', () => {
+    console.log('[NEXUS] 🛑 SIGTERM received, shutting down gracefully...');
+    retryQueue.stop();
+    server.close(() => {
+        console.log('[NEXUS] ✅ Server closed');
+        process.exit(0);
+    });
+});
+
+process.on('SIGINT', () => {
+    console.log('[NEXUS] 🛑 SIGINT received, shutting down gracefully...');
+    retryQueue.stop();
+    server.close(() => {
+        console.log('[NEXUS] ✅ Server closed');
+        process.exit(0);
+    });
 });

@@ -4,6 +4,7 @@ import Database from "better-sqlite3";
 import { existsSync, mkdirSync } from "fs";
 import { join } from "path";
 import { sanitizeForLog } from "../utils/sanitize.js";
+import { eventsTotal, eventPersistDuration } from "../utils/metrics.js";
 
 /**
  * ============================================================================
@@ -121,6 +122,10 @@ class ProtocolNexus extends EventEmitter {
     public dispatch(event: ProtocolEvent, payload: any) {
         const sanitizedPayload = sanitizeForLog(payload);
         console.log(`[NEXUS] ⚡ Dispatching ${event}`, JSON.stringify(sanitizedPayload, null, 0));
+
+        // Increment metrics
+        eventsTotal.inc({ event_type: event, source: 'internal' });
+
         this.emit(event, payload);
     }
 
@@ -142,6 +147,8 @@ class ProtocolNexus extends EventEmitter {
         payload: any,
         source?: string
     ): Promise<number> {
+        const end = eventPersistDuration.startTimer();
+
         return new Promise((resolve, reject) => {
             try {
                 const stmt = this.db.prepare(`
@@ -166,9 +173,11 @@ class ProtocolNexus extends EventEmitter {
                 );
 
                 console.log(`[NEXUS] 💾 Event persisted: ${event} (id: ${result.lastInsertRowid})`);
+                end(); // Stop timer
                 resolve(result.lastInsertRowid as number);
             } catch (error) {
                 console.error('[NEXUS] ❌ Error persisting event:', error);
+                end(); // Stop timer even on error
                 reject(error);
             }
         });

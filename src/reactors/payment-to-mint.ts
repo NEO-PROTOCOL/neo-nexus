@@ -1,5 +1,7 @@
 import { Nexus, ProtocolEvent, PaymentPayload, MintPayload } from '../core/nexus.js';
 import { Discovery } from '../core/discovery.js';
+import { retryQueue } from '../utils/retry-queue.js';
+import { reactorExecutions, reactorDuration, httpCallsTotal, httpCallDuration, retryQueueAdditions } from '../utils/metrics.js';
 
 /**
  * ============================================================================
@@ -13,12 +15,17 @@ export function setup() {
     console.log('[REACTOR] 🔗 Setting up Payment → Mint reactor');
 
     Nexus.onEvent(ProtocolEvent.PAYMENT_RECEIVED, async (payload: PaymentPayload) => {
+        const endReactor = reactorDuration.startTimer({ reactor: 'payment-to-mint' });
         console.log(`[REACTOR] 💰 Payment confirmed for Order: ${payload.orderId}`);
+
+        // Resolve Smart Factory URL and key outside try block for scope access
+        let factoryUrl: string | null = null;
+        let factoryKey: string | undefined = undefined;
 
         try {
             // Resolve Smart Factory URL dynamically
-            const factoryUrl = await Discovery.resolveUrl('smart-core');
-            const factoryKey = process.env.FACTORY_API_KEY;
+            factoryUrl = await Discovery.resolveUrl('smart-core');
+            factoryKey = process.env.FACTORY_API_KEY;
 
             // Prepare mint request
             const mintRequest: MintPayload = {
@@ -33,6 +40,8 @@ export function setup() {
                 console.warn('[REACTOR] ⚠️  Smart Factory not configured (Discovery failed or missing Key). Dispatching MINT_REQUESTED event only.');
                 Nexus.dispatch(ProtocolEvent.MINT_REQUESTED, mintRequest);
                 await Nexus.persistEvent(ProtocolEvent.MINT_REQUESTED, mintRequest, 'reactor:payment-to-mint');
+                reactorExecutions.inc({ reactor: 'payment-to-mint', status: 'skipped' });
+                endReactor(); // Stop timer
                 return;
             }
 
@@ -44,6 +53,7 @@ export function setup() {
             const timeoutId = setTimeout(() => controller.abort(), 30000); // 30s timeout
 
             let response;
+            const endHttp = httpCallDuration.startTimer({ target: 'smart-factory' });
             try {
                 response = await fetch(targetEndpoint, {
                     method: 'POST',
@@ -56,6 +66,8 @@ export function setup() {
                 });
 
                 clearTimeout(timeoutId);
+                endHttp(); // Stop HTTP timer
+                httpCallsTotal.inc({ target: 'smart-factory', method: 'POST', status_code: response.status.toString() });
 
                 if (!response.ok) {
                     const errorText = await response.text();
@@ -74,29 +86,58 @@ export function setup() {
                         'reactor:payment-to-mint:error'
                     );
 
-                    // TODO: Add to retry queue
+                    // Add to retry queue
+                    await retryQueue.add({
+                        taskId: payload.orderId,
+                        type: 'MINT_REQUEST',
+                        targetUrl: targetEndpoint,
+                        payload: mintRequest,
+                        headers: {
+                            'Authorization': `Bearer ${factoryKey}`,
+                            'Content-Type': 'application/json'
+                        },
+                        maxRetries: 5,
+                        nextRetry: Date.now() + 2000 // Retry in 2s
+                    });
+
+                    retryQueueAdditions.inc({ type: 'MINT_REQUEST', reason: 'http_error' });
+                    reactorExecutions.inc({ reactor: 'payment-to-mint', status: 'retry_queued' });
+                    endReactor(); // Stop timer
                     return;
                 }
             } catch (fetchError: any) {
                 clearTimeout(timeoutId);
+                endHttp(); // Stop HTTP timer
+                httpCallsTotal.inc({ target: 'smart-factory', method: 'POST', status_code: 'error' });
 
-                if (fetchError.name === 'AbortError') {
-                    console.error('[REACTOR] ❌ Smart Factory API timeout');
-                    await Nexus.persistEvent(
-                        ProtocolEvent.MINT_REQUESTED,
-                        { ...mintRequest, error: { message: 'Request timeout' } },
-                        'reactor:payment-to-mint:timeout'
-                    );
-                } else {
-                    console.error('[REACTOR] ❌ Smart Factory API network error:', fetchError.message);
-                    await Nexus.persistEvent(
-                        ProtocolEvent.MINT_REQUESTED,
-                        { ...mintRequest, error: { message: fetchError.message } },
-                        'reactor:payment-to-mint:network-error'
-                    );
-                }
+                const errorType = fetchError.name === 'AbortError' ? 'timeout' : 'network-error';
+                const errorMessage = fetchError.name === 'AbortError' ? 'Request timeout' : fetchError.message;
+                const retryReason = fetchError.name === 'AbortError' ? 'timeout' : 'network_error';
 
-                // TODO: Add to retry queue
+                console.error(`[REACTOR] ❌ Smart Factory API ${errorType}:`, errorMessage);
+                await Nexus.persistEvent(
+                    ProtocolEvent.MINT_REQUESTED,
+                    { ...mintRequest, error: { message: errorMessage } },
+                    `reactor:payment-to-mint:${errorType}`
+                );
+
+                // Add to retry queue
+                await retryQueue.add({
+                    taskId: payload.orderId,
+                    type: 'MINT_REQUEST',
+                    targetUrl: targetEndpoint,
+                    payload: mintRequest,
+                    headers: {
+                        'Authorization': `Bearer ${factoryKey}`,
+                        'Content-Type': 'application/json'
+                    },
+                    maxRetries: 5,
+                    nextRetry: Date.now() + 2000 // Retry in 2s
+                });
+
+                retryQueueAdditions.inc({ type: 'MINT_REQUEST', reason: retryReason });
+                reactorExecutions.inc({ reactor: 'payment-to-mint', status: 'retry_queued' });
+                endReactor(); // Stop timer
                 return;
             }
 
@@ -116,9 +157,35 @@ export function setup() {
                 'reactor:payment-to-mint'
             );
 
-        } catch (error) {
+            reactorExecutions.inc({ reactor: 'payment-to-mint', status: 'success' });
+            endReactor(); // Stop timer
+
+        } catch (error: any) {
             console.error('[REACTOR] ❌ Error processing payment:', error);
-            // TODO: Add to retry queue
+            reactorExecutions.inc({ reactor: 'payment-to-mint', status: 'error' });
+            endReactor(); // Stop timer
+
+            // For unexpected errors, also add to retry queue
+            if (factoryUrl && factoryKey) {
+                await retryQueue.add({
+                    taskId: payload.orderId,
+                    type: 'MINT_REQUEST',
+                    targetUrl: `${factoryUrl}/api/mint`,
+                    payload: {
+                        targetAddress: payload.payerId,
+                        tokenId: 'NEOFLW',
+                        amount: payload.amount.toString(),
+                        reason: 'purchase',
+                        refTransactionId: payload.orderId
+                    },
+                    headers: {
+                        'Authorization': `Bearer ${factoryKey}`,
+                        'Content-Type': 'application/json'
+                    },
+                    maxRetries: 5,
+                    nextRetry: Date.now() + 2000
+                });
+            }
         }
     });
 }
