@@ -1,57 +1,79 @@
 [
   {
+    "id": "neobot-architect",
+    "name": "Neobot — Node Warrior / NEO Nexus",
+    "role": "Sovereign Node / Orchestrator",
+    "webhookUrl": "https://nexus.neoprotocol.space/api/webhook/nexus",
+    "railwayUrl": "https://neo-nexus-production.up.railway.app/api/webhook/nexus",
+    "localUrl": "http://localhost:19000/api/webhook/nexus",
+    "apiKey": "NEOBOT_API_KEY",
+    "events": [
+      "TASK_COMPLETED",
+      "BUILD_STATUS",
+      "FACTORY:MINT_CONFIRMED",
+      "FLOWPAY:PAYMENT_RECEIVED",
+      "NEXUS:START"
+    ],
+    "note": "Node Warrior principal. Contém Protocol Nexus Event Bus e identidades mio-system."
+  },
+  {
     "id": "flowpay",
     "name": "FlowPay Sovereign",
-    "webhookUrl": "https://pay.flowoff.xyz/api/webhook/nexus",
+    "role": "Financial Sovereign Node",
+    "webhookUrl": "https://flowpay.cash/api/webhook/nexus",
+    "railwayUrl": "https://flowpay-production-10d8.up.railway.app/api/webhook/nexus",
+    "localUrl": "http://localhost:4321/api/webhook/nexus",
+    "absolutePath": "/usr/local/projects/flowpay",
+    "railwayProjectId": "0a6c292a-b3b2-4873-96a7-2e84e7b9b38c",
     "apiKey": "FLOWPAY_API_KEY",
     "events": [
-      "PAYMENT_RECEIVED",
-      "PAYMENT_FAILED"
+      "FACTORY:MINT_CONFIRMED",
+      "FACTORY:MINT_FAILED",
+      "NEOBOT:ACCESS_UNLOCKED"
     ]
   },
   {
     "id": "smart-factory",
     "name": "NEO Smart Factory",
+    "role": "Web3 Engineering Node",
     "webhookUrl": "https://smart.neoprotocol.space/api/webhook/nexus",
+    "localUrl": "http://localhost:3001/api/webhook/nexus",
+    "localPath": "../neo-smart-factory",
     "apiKey": "FACTORY_API_KEY",
     "events": [
-      "MINT_CONFIRMED",
-      "CONTRACT_DEPLOYED"
-    ]
-  },
-  {
-    "id": "neobot-architect",
-    "name": "Neobot (Architect Agent)",
-    "webhookUrl": "https://dev.neoprotocol.space/api/webhook/nexus",
-    "apiKey": "NEOBOT_API_KEY",
-    "events": [
-      "TASK_COMPLETED",
-      "BUILD_STATUS"
+      "FACTORY:MINT_CONFIRMED",
+      "FACTORY:CONTRACT_DEPLOYED",
+      "FACTORY:MINT_REQUESTED"
     ]
   },
   {
     "id": "flowcloser",
     "name": "FlowCloser (Notification Agent)",
+    "role": "Sales Agent",
     "webhookUrl": "https://sales.neoprotocol.space/api/webhook/nexus",
+    "railwayUrl": "https://flowcloser-agent-production.up.railway.app/api/webhook/nexus",
+    "localUrl": "http://localhost:3002/api/webhook/nexus",
     "apiKey": "FLOWCLOSER_API_KEY",
     "events": [
-      "MINT_CONFIRMED",
-      "PAYMENT_RECEIVED"
+      "FACTORY:MINT_CONFIRMED",
+      "FLOWPAY:PAYMENT_RECEIVED"
     ]
   },
   {
     "id": "fluxx-dao",
     "name": "Fluxx DAO",
+    "role": "Governance Node",
     "webhookUrl": "https://fluxx.neoprotocol.space/api/webhook/nexus",
     "apiKey": "FLUXX_API_KEY",
     "events": [
-      "PROPOSAL_CREATED",
-      "VOTE_CAST"
+      "FLUXX:PROPOSAL_CREATED",
+      "FLUXX:VOTE_CAST"
     ]
   },
   {
     "id": "neo-flowoff",
     "name": "NEO FlowOFF Agency",
+    "role": "Agency Node",
     "webhookUrl": "https://flowoff.xyz/api/webhook/nexus",
     "apiKey": "FLOWOFF_API_KEY",
     "events": [
@@ -62,6 +84,7 @@
   {
     "id": "wod-x-pro",
     "name": "WOD [X] PRO",
+    "role": "Game / DApp Node",
     "webhookUrl": "https://app.wodx.pro/api/webhook/nexus",
     "apiKey": "WOD_API_KEY",
     "events": [
@@ -72,6 +95,7 @@
   {
     "id": "neo-agent-full",
     "name": "NEO Agent Node",
+    "role": "Cloud Agent",
     "webhookUrl": "https://agent-node.neoprotocol.space/api/webhook/nexus",
     "apiKey": "AGENT_NODE_API_KEY",
     "events": [
@@ -82,6 +106,7 @@
   {
     "id": "neo-protocol",
     "name": "NEO Protocol Core",
+    "role": "Protocol Core",
     "webhookUrl": "https://neoprotocol.space/api/webhook/nexus",
     "apiKey": "PROTOCOL_API_KEY",
     "events": [
